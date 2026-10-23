@@ -1,5 +1,5 @@
 /* แคชตัวแอปไว้ในเครื่อง เปิดได้ทันที ข้อมูลยังดึงจากเซิร์ฟเวอร์ทุกครั้ง */
-var V = 'repair-accf960c34';
+var V = 'repair-0f46e3d35b';
 var SHELL = ['./', 'index.html', 'config.js', 'manifest.webmanifest', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'favicon-32.png'];
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(V).then(function (c) { return c.addAll(SHELL); }).then(function () { return self.skipWaiting(); }));
