@@ -1,0 +1,1476 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>แจ้งซ่อม</title>
+<meta name="description" content="ระบบแจ้งซ่อม ซ่อมบำรุงส่วนกลาง">
+<meta name="theme-color" content="#d63f78">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="แจ้งซ่อม">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="favicon-32.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+<script src="config.js"></script>
+</head>
+<body>
+
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: clinic back-office — light blush ground, white rounded panels, raspberry actions; left rail nav, bottom tabs on phones */
+:root {
+  --bg: #fbf2f5; --surface: #ffffff; --sunk: #fdf6f8; --ink: #2b1821; --muted: #7d6571; --line: #f0dce4;
+  --accent: #d63f78; --accent-deep: #9c2150; --accent-soft: #fce4ed; --accent-line: #f3bcd0; --accent-ink: #ffffff;
+  --amber: #a86400; --amber-soft: #fff4d3; --red: #c43a2f; --red-soft: #fbe2df; --green: #23905a; --green-soft: #def3e7;
+  --blue: #2f62b8; --blue-soft: #e3ebfa; --violet: #7048b8; --violet-soft: #eee6fa; --grey-soft: #f1e8ec;
+  --s1: #3f9594; --s2: #b3322a; --s3: #e08a0b; --s4: #b4471f; --s5: #c23a72; --s-off: #e6d9df; --s-off-ink: #a8929d;
+  --shadow: 0 1px 2px rgba(80, 20, 45, .05), 0 6px 22px rgba(80, 20, 45, .07);
+  --f-display: "IBM Plex Sans Thai", "Bai Jamjuree", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans Thai", "Sarabun", "Leelawadee UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --r: 18px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #1b1116; --surface: #26171f; --sunk: #201319; --ink: #f7e9ef; --muted: #bb9dab; --line: #3e2632;
+  --accent: #ef6a9c; --accent-deep: #f59dbf; --accent-soft: #4a1d30; --accent-line: #7a3150; --accent-ink: #2a0716;
+  --amber: #f0b14a; --amber-soft: #3a2a10; --red: #f07f72; --red-soft: #431c18; --green: #63c98c; --green-soft: #173323;
+  --blue: #86aaf2; --blue-soft: #1c2a47; --violet: #b79df2; --violet-soft: #2c2142; --grey-soft: #33222b;
+  --s1: #4fb0ae; --s2: #d4554c; --s3: #f0a02b; --s4: #d9663a; --s5: #e05790; --s-off: #3f2a34; --s-off-ink: #8d7280;
+  --shadow: 0 1px 2px rgba(0,0,0,.35), 0 8px 24px rgba(0,0,0,.3); color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #1b1116; --surface: #26171f; --sunk: #201319; --ink: #f7e9ef; --muted: #bb9dab; --line: #3e2632;
+  --accent: #ef6a9c; --accent-deep: #f59dbf; --accent-soft: #4a1d30; --accent-line: #7a3150; --accent-ink: #2a0716;
+  --amber: #f0b14a; --amber-soft: #3a2a10; --red: #f07f72; --red-soft: #431c18; --green: #63c98c; --green-soft: #173323;
+  --blue: #86aaf2; --blue-soft: #1c2a47; --violet: #b79df2; --violet-soft: #2c2142; --grey-soft: #33222b;
+  --s1: #4fb0ae; --s2: #d4554c; --s3: #f0a02b; --s4: #d9663a; --s5: #e05790; --s-off: #3f2a34; --s-off-ink: #8d7280;
+  --shadow: 0 1px 2px rgba(0,0,0,.35), 0 8px 24px rgba(0,0,0,.3); color-scheme: dark; }
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--f-body); -webkit-font-smoothing: antialiased; }
+h1, h2, h3 { font-family: var(--f-display); margin: 0; text-wrap: balance; letter-spacing: -.005em; }
+h1 { font-size: 1.6rem; font-weight: 700; } h2 { font-size: 1.2rem; font-weight: 600; } h3 { font-size: 1rem; font-weight: 600; }
+.mono { font-family: var(--f-mono); font-size: .88em; letter-spacing: .01em; }
+.muted { color: var(--muted); } .small { font-size: .85rem; }
+.num { font-variant-numeric: tabular-nums; }
+a { color: var(--accent); }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* ---------- login ---------- */
+.login { min-height: 100%; display: grid; place-items: center; padding-block: 32px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.login-card { width: min(420px, 100%); background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); padding: 28px; display: grid; gap: 18px; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.mark { width: 42px; height: 42px; border-radius: 12px; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none; }
+.mark svg { width: 24px; height: 24px; }
+.brand-t { font-family: var(--f-display); font-weight: 700; font-size: 1.2rem; line-height: 1.2; color: var(--accent-deep); }
+.brand-s { font-size: .8rem; color: var(--muted); }
+.demo-box { background: var(--sunk); border: 1px dashed var(--line); border-radius: 8px; padding: 10px 12px; font-size: .84rem; display: grid; gap: 6px; }
+.demo-box .acc { display: flex; flex-wrap: wrap; gap: 6px; }
+.demo-box button { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 2px 10px; cursor: pointer; font-size: .8rem; }
+
+/* ---------- shell ---------- */
+.shell { display: grid; grid-template-columns: 228px 1fr; min-height: 100%; }
+.rail { background: var(--surface); border-right: 1px solid var(--line); padding: 18px 12px; display: flex; flex-direction: column; gap: 18px; position: sticky; top: 0; height: 100vh; align-self: start; }
+.rail .brand { padding: 0 6px; }
+.nav { display: grid; gap: 2px; }
+.nav button { display: flex; align-items: center; gap: 12px; width: 100%; padding: 11px 12px; border: 1px solid transparent; background: none; border-radius: 12px; cursor: pointer; text-align: left; color: var(--muted); font-weight: 500; }
+.nav button svg { width: 19px; height: 19px; flex: none; }
+.nav button:hover { background: var(--sunk); color: var(--ink); }
+.nav button.on { background: var(--accent-soft); color: var(--accent-deep); border-color: var(--accent-line); font-weight: 600; }
+.nav-l { font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); padding: 0 12px; font-weight: 600; }
+.nav .badge { margin-left: auto; background: var(--red); color: #fff; font-size: .72rem; padding: 0 7px; border-radius: 999px; line-height: 1.6; }
+.me { margin-top: auto; border-top: 1px solid var(--line); padding: 12px 6px 0; display: grid; gap: 8px; font-size: .85rem; }
+.me-n { font-weight: 600; }
+.me .row { display: flex; gap: 6px; flex-wrap: wrap; }
+.main { min-width: 0; padding-block: 24px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.wrap { max-width: 1180px; margin: 0 auto; display: grid; gap: 18px; }
+.head { display: flex; align-items: end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.mob-top { display: none; }
+@media (max-width: 860px) {
+  .shell { grid-template-columns: 1fr; }
+  .rail { position: fixed; inset: auto 0 0 0; top: auto; height: auto; flex-direction: row; padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px)); border-right: 0; border-top: 1px solid var(--line); z-index: 30; padding-left: max(4px, env(safe-area-inset-left, 0px)); padding-right: max(4px, env(safe-area-inset-right, 0px)); }
+  .rail .brand, .rail .me, .rail .nav-l { display: none; }
+  .nav { grid-auto-flow: column; grid-auto-columns: 1fr; width: 100%; }
+  .nav button { flex-direction: column; gap: 2px; font-size: .7rem; padding: 6px 2px; text-align: center; justify-content: center; position: relative; }
+  .nav .badge { position: absolute; top: 2px; right: 18%; margin: 0; }
+  .main { padding-block: 0 96px; }
+  .mob-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-block: 12px; position: sticky; top: env(safe-area-inset-top, 0px); background: var(--bg); z-index: 20; }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+}
+
+/* ---------- elements ---------- */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 20px; min-width: 0; box-shadow: var(--shadow); }
+.panel > h2, .panel > h3 { margin-bottom: 12px; }
+.ptitle { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--accent-line); color: var(--accent-deep); background: var(--surface); padding: 9px 16px; border-radius: 12px; cursor: pointer; font-weight: 500; white-space: nowrap; }
+.btn:hover { border-color: var(--accent); background: var(--accent-soft); }
+.btn svg { width: 17px; height: 17px; }
+.btn.pri { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.pri:hover { filter: brightness(1.06); background: var(--accent); }
+.btn.pri { box-shadow: 0 2px 8px rgba(214, 63, 120, .25); }
+.btn.dng { color: var(--red); border-color: var(--red-soft); }
+.btn.ghost { border-color: transparent; background: none; color: var(--muted); }
+.btn.sm { padding: 4px 10px; font-size: .85rem; }
+.btn:disabled { opacity: .55; cursor: progress; }
+label.f { display: grid; gap: 5px; font-size: .86rem; font-weight: 500; min-width: 0; }
+label.f > span em { color: var(--red); font-style: normal; }
+input.i, select.i, textarea.i { width: 100%; border: 1px solid var(--line); background: var(--sunk); border-radius: 12px; padding: 9px 11px; font-size: .95rem; font-weight: 400; min-width: 0; }
+textarea.i { resize: vertical; min-height: 78px; }
+input.i:focus, select.i:focus, textarea.i:focus { outline: none; border-color: var(--accent); background: var(--surface); box-shadow: 0 0 0 3px var(--accent-soft); }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 640px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+.span2 { grid-column: 1 / -1; }
+.stack { display: grid; gap: 14px; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.spacer { flex: 1; }
+.err { color: var(--red); font-size: .88rem; min-height: 1.2em; }
+
+.pill { display: inline-flex; align-items: center; gap: 5px; font-size: .78rem; font-weight: 600; padding: 2px 9px; border-radius: 999px; white-space: nowrap; background: var(--grey-soft); color: var(--muted); }
+.pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.st-submit { background: var(--blue-soft); color: var(--blue); }
+.st-received { background: var(--accent-soft); color: var(--accent); }
+.st-repair { background: var(--amber-soft); color: var(--amber); }
+.st-parts { background: var(--red-soft); color: var(--red); }
+.st-out { background: var(--violet-soft); color: var(--violet); }
+.st-done { background: var(--green-soft); color: var(--green); }
+.st-branch { background: var(--blue-soft); color: var(--blue); }
+.st-replace { background: var(--red-soft); color: var(--red); }
+.urg { font-size: .76rem; font-weight: 600; color: var(--muted); }
+.urg.hot { color: var(--red); }
+.code { font-family: var(--f-mono); font-size: .8rem; background: var(--sunk); border: 1px solid var(--line); border-radius: 5px; padding: 0 6px; white-space: nowrap; }
+
+/* KPI */
+.kpis { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 1000px) { .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px 18px; display: grid; gap: 4px; cursor: default; box-shadow: var(--shadow); }
+.kpi.click { cursor: pointer; } .kpi.click:hover { border-color: var(--accent); }
+.kpi .l { font-size: .86rem; color: var(--muted); font-weight: 500; }
+.kpi .v { font-family: var(--f-display); font-size: 1.9rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.kpi .v small { font-size: .9rem; font-weight: 500; color: var(--muted); }
+.kpi.alert .v { color: var(--red); }
+.dash { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 18px; }
+@media (max-width: 1000px) { .dash { grid-template-columns: 1fr; } }
+.bars { display: grid; gap: 8px; }
+.bar { display: grid; grid-template-columns: 150px 1fr 40px; gap: 10px; align-items: center; font-size: .86rem; }
+.bar .t { height: 10px; background: var(--sunk); border-radius: 5px; overflow: hidden; }
+.bar .t i { display: block; height: 100%; border-radius: 5px; background: var(--accent); }
+.bar b { text-align: right; font-variant-numeric: tabular-nums; }
+@media (max-width: 480px) { .bar { grid-template-columns: 110px 1fr 34px; } }
+.chart { width: 100%; height: auto; display: block; }
+.chart text { fill: var(--muted); font-size: 10px; font-family: var(--f-body); }
+.chart .lbl { fill: var(--ink); font-weight: 600; }
+table.t { width: 100%; border-collapse: collapse; font-size: .88rem; }
+table.t th { text-align: left; font-weight: 600; color: var(--muted); font-size: .78rem; padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+table.t td { padding: 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+table.t tr:last-child td { border-bottom: 0; }
+table.t tr.click { cursor: pointer; } table.t tr.click:hover td { background: var(--sunk); }
+.tscroll { overflow-x: auto; }
+
+/* list */
+.filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { border: 1px solid var(--line); background: var(--surface); padding: 5px 12px; border-radius: 999px; cursor: pointer; font-size: .84rem; }
+.chip.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.list { display: grid; }
+.item { display: grid; grid-template-columns: 128px minmax(0, 1fr) auto; gap: 14px; padding: 12px 6px; border-bottom: 1px solid var(--line); cursor: pointer; align-items: start; }
+.item:hover { background: var(--sunk); }
+.item:last-child { border-bottom: 0; }
+.item .no { font-family: var(--f-mono); font-size: .84rem; font-weight: 500; }
+.item .tt { font-weight: 600; overflow-wrap: anywhere; }
+.item .sub { font-size: .84rem; color: var(--muted); overflow-wrap: anywhere; }
+.item .rt { display: grid; gap: 4px; justify-items: end; text-align: right; }
+@media (max-width: 640px) { .item { grid-template-columns: minmax(0, 1fr) auto; } .item .lt { grid-column: 1 / -1; display: flex; gap: 8px; align-items: baseline; } }
+.pager { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding-top: 12px; font-size: .86rem; flex-wrap: wrap; }
+.empty { padding: 36px 12px; text-align: center; color: var(--muted); }
+
+/* detail */
+.detail { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 1000px) { .detail { grid-template-columns: 1fr; } }
+.kv { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 7px 14px; font-size: .92rem; }
+.kv dt { color: var(--muted); } .kv dd { margin: 0; overflow-wrap: anywhere; white-space: pre-line; }
+@media (max-width: 480px) { .kv { grid-template-columns: 1fr; gap: 0; } .kv dd { margin-bottom: 8px; } }
+.thumbs { display: flex; gap: 8px; flex-wrap: wrap; }
+.thumbs .th { width: 104px; height: 104px; border-radius: 8px; border: 1px solid var(--line); background: var(--sunk); object-fit: cover; cursor: zoom-in; position: relative; }
+.thumbs .x { position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border-radius: 50%; border: 0; background: rgba(0,0,0,.6); color: #fff; cursor: pointer; line-height: 1; }
+.thumbs .slot { position: relative; }
+.drop { border: 1.5px dashed var(--line); border-radius: 8px; padding: 14px; text-align: center; color: var(--muted); font-size: .88rem; cursor: pointer; background: var(--sunk); }
+.drop:hover { border-color: var(--accent); color: var(--accent); }
+.timeline { display: grid; gap: 0; }
+.tl { display: grid; grid-template-columns: 14px minmax(0, 1fr); gap: 10px; position: relative; padding-bottom: 14px; }
+.tl::before { content: ""; position: absolute; left: 6px; top: 14px; bottom: 0; width: 2px; background: var(--line); }
+.tl:last-child::before { display: none; }
+.tl .dot { width: 14px; height: 14px; border-radius: 50%; border: 3px solid var(--accent); background: var(--surface); margin-top: 4px; }
+.tl .when { font-size: .78rem; color: var(--muted); }
+.tl .what { font-size: .9rem; overflow-wrap: anywhere; }
+.actbox { border: 1.5px solid var(--accent-line); box-shadow: var(--shadow); border-radius: var(--r); background: var(--surface); padding: 18px; display: grid; gap: 14px; }
+.actbox h3 { color: var(--accent-deep); }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); }
+.tabs button { border: 0; background: none; padding: 8px 12px; cursor: pointer; border-bottom: 2px solid transparent; color: var(--muted); font-weight: 500; }
+.tabs button.on { color: var(--accent); border-bottom-color: var(--accent); }
+.radios { display: grid; gap: 6px; }
+.radios label { display: flex; gap: 8px; align-items: center; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; cursor: pointer; font-size: .9rem; }
+.radios label:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.stars { display: grid; gap: 10px; }
+.star-q { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; font-size: .9rem; }
+@media (max-width: 480px) { .star-q { grid-template-columns: 1fr; gap: 4px; } }
+.star-r { display: flex; gap: 4px; }
+.star-r button { width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--line); background: var(--sunk); cursor: pointer; font-weight: 600; font-variant-numeric: tabular-nums; }
+.star-r button.on { background: var(--amber); border-color: var(--amber); color: #fff; }
+.score { font-family: var(--f-display); font-size: 2rem; font-weight: 700; color: var(--amber); line-height: 1; }
+.hist { display: grid; gap: 8px; max-height: 340px; overflow: auto; }
+.hist .h { border-left: 3px solid var(--line); padding: 2px 0 2px 10px; font-size: .86rem; cursor: pointer; }
+.hist .h:hover { border-left-color: var(--accent); }
+.confirm { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; background: var(--red-soft); color: var(--red); border-radius: 8px; padding: 8px 10px; font-size: .88rem; }
+.sugg { position: relative; }
+.sugg-list { position: absolute; z-index: 15; left: 0; right: 0; top: 100%; margin-top: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); max-height: 280px; overflow: auto; }
+.sugg-list button { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; width: 100%; text-align: left; border: 0; border-bottom: 1px solid var(--line); background: none; padding: 8px 10px; cursor: pointer; align-items: center; font-size: .88rem; }
+.sugg-list button:hover, .sugg-list button.hl { background: var(--accent-soft); }
+.picked { display: flex; gap: 10px; align-items: center; background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; font-size: .9rem; flex-wrap: wrap; }
+
+
+/* ---------- status track (ribbon + medallions) ---------- */
+.track { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 6px 0 4px; }
+.tk { position: relative; display: grid; align-content: start; justify-items: center; text-align: center; gap: 0; min-width: 0; --c: var(--s-off); }
+.tk.s1 { --c: var(--s1); } .tk.s2 { --c: var(--s2); } .tk.s3 { --c: var(--s3); } .tk.s4 { --c: var(--s4); } .tk.s5 { --c: var(--s5); }
+.tk.off { --c: var(--s-off); }
+.tk .seg { position: absolute; left: 0; right: 0; top: 30px; height: 30px; background: var(--c); background: linear-gradient(180deg, color-mix(in srgb, var(--c) 88%, #fff) 0%, var(--c) 55%, color-mix(in srgb, var(--c) 82%, #000) 100%); }
+.tk:first-child .seg { border-radius: 15px 0 0 15px; } .tk:last-child .seg { border-radius: 0 15px 15px 0; }
+.tk .med { position: relative; width: 90px; height: 90px; border-radius: 50%; background: var(--c); border: 7px solid var(--surface); box-shadow: 0 6px 16px rgba(60, 20, 35, .18); display: grid; place-items: center; color: #fff; z-index: 1; }
+.tk.off .med { color: var(--s-off-ink); box-shadow: none; }
+.tk .med svg { width: 38px; height: 38px; }
+.tk.cur .med::after { content: ""; position: absolute; inset: -13px; border-radius: 50%; border: 2px dashed var(--c); animation: spin 14s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.tk .dots { width: 0; height: 26px; border-left: 2.5px dotted var(--muted); opacity: .6; }
+.tk .nb { width: 44px; height: 44px; border-radius: 50%; background: var(--c); color: #fff; font-weight: 700; display: grid; place-items: center; border: 4px solid var(--surface); box-shadow: 0 3px 10px rgba(60, 20, 35, .15); font-variant-numeric: tabular-nums; }
+.tk.off .nb { color: var(--s-off-ink); box-shadow: none; }
+.tk .tt { font-family: var(--f-display); font-weight: 700; font-size: 1rem; margin-top: 10px; line-height: 1.3; }
+.tk .ds { font-size: .8rem; color: var(--muted); margin-top: 3px; padding: 0 6px; overflow-wrap: anywhere; line-height: 1.4; }
+.tk.off .tt { color: var(--muted); font-weight: 600; }
+.tk .now { display: inline-block; margin-top: 6px; font-size: .72rem; font-weight: 700; color: var(--c); border: 1px solid var(--c); border-radius: 999px; padding: 0 8px; }
+.track-note { margin-top: 12px; padding: 10px 14px; border-radius: 12px; background: var(--grey-soft); color: var(--muted); font-size: .9rem; }
+@media (max-width: 760px) {
+  .track { grid-template-columns: 1fr; gap: 0; }
+  .tk { grid-template-columns: 64px minmax(0, 1fr); justify-items: start; text-align: left; column-gap: 14px; padding-bottom: 14px; }
+  .tk .seg { left: 22px; right: auto; top: 0; bottom: 0; width: 20px; height: auto; border-radius: 0 !important; }
+  .tk:first-child .seg { top: 22px; border-radius: 10px 10px 0 0 !important; } .tk:last-child .seg { bottom: auto; height: 32px; border-radius: 0 0 10px 10px !important; }
+  .tk .med { width: 64px; height: 64px; border-width: 5px; grid-row: span 3; }
+  .tk .med svg { width: 28px; height: 28px; }
+  .tk.cur .med::after { inset: -9px; }
+  .tk .dots, .tk .nb { display: none; }
+  .tk .tt { margin-top: 8px; } .tk .ds { padding: 0; }
+  .tk .now { justify-self: start; }
+}
+/* mini track in lists */
+.mini { display: grid; grid-template-columns: repeat(5, 12px); gap: 3px; }
+.mini i { height: 6px; border-radius: 3px; background: var(--s-off); }
+.mini i.s1 { background: var(--s1); } .mini i.s2 { background: var(--s2); } .mini i.s3 { background: var(--s3); } .mini i.s4 { background: var(--s4); } .mini i.s5 { background: var(--s5); }
+/* skeleton */
+.sk { display: grid; gap: 12px; }
+.sk i { display: block; height: 16px; border-radius: 8px; background: linear-gradient(90deg, var(--grey-soft), var(--sunk), var(--grey-soft)); background-size: 200% 100%; animation: shimmer 1.2s ease-in-out infinite; }
+.sk i:nth-child(3n) { width: 70%; } .sk i:nth-child(3n+2) { width: 88%; }
+@keyframes shimmer { to { background-position: -200% 0; } }
+.refreshing { font-size: .78rem; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+.refreshing::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: blink 1s ease-in-out infinite; }
+@keyframes blink { 50% { opacity: .2; } }
+
+
+.kpis.k6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.kpis.k4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 1100px) { .kpis.k6 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .kpis.k4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .kpis.k6 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.kpi.blue.alert .v { color: var(--blue); }
+.bar.click { cursor: pointer; border-radius: 8px; } .bar.click:hover { background: var(--sunk); }
+.age { display: inline-block; margin-top: 4px; font-size: .74rem; font-weight: 700; padding: 1px 8px; border-radius: 999px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.age.a1 { background: var(--green-soft); color: var(--green); }
+.age.a2 { background: var(--amber-soft); color: var(--amber); }
+.age.a3 { background: var(--red-soft); color: var(--red); }
+.slot.up::after { content: "กำลังอัปโหลด"; position: absolute; inset: 0; display: grid; place-items: center; background: rgba(43, 24, 33, .55); color: #fff; font-size: .72rem; border-radius: 8px; }
+.slot.fail::after { content: "จะส่งพร้อมใบแจ้ง"; position: absolute; inset: auto 0 0; padding: 2px; text-align: center; background: var(--amber); color: #fff; font-size: .66rem; border-radius: 0 0 8px 8px; }
+.dash { grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); }
+@media (max-width: 1000px) { .dash { grid-template-columns: 1fr; } }
+@media (max-width: 860px) { .nav button.adm { display: none; } }
+
+
+/* pipeline on dashboard */
+.pipe .tk.click { cursor: pointer; border-radius: 14px; padding-bottom: 8px; }
+.pipe .tk.click:hover .med { transform: translateY(-2px); }
+.pipe .tk .med { transition: transform .15s; }
+.pipe .tk.sel .med { outline: 3px solid var(--c); outline-offset: 4px; }
+.pipe .tk.off .med { opacity: .9; }
+.pipe .nb.cnt { width: auto; min-width: 52px; height: 40px; padding: 0 12px; border-radius: 999px; font-size: 1.15rem; }
+.pipe .cnt-m { display: none; }
+.pipe .ds { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; margin-top: 6px; }
+.pb { font-size: .74rem; background: var(--sunk); border: 1px solid var(--line); border-radius: 999px; padding: 0 7px; color: var(--muted); white-space: nowrap; }
+.pb b { color: var(--ink); }
+.brrow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--line); }
+.brc { display: inline-flex; gap: 8px; align-items: baseline; border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 6px 12px; cursor: pointer; font-size: .84rem; }
+.brc b { color: var(--accent-deep); font-family: var(--f-mono); }
+.brc:hover { border-color: var(--accent-line); background: var(--accent-soft); }
+.brc.on { border-color: var(--accent); background: var(--accent-soft); }
+@media (max-width: 760px) {
+  .pipe .cnt-m { display: inline-block; margin-left: 6px; min-width: 28px; text-align: center; border-radius: 999px; padding: 0 8px; background: var(--c); color: #fff; font-size: .85rem; }
+  .pipe .tk.off .cnt-m { color: var(--s-off-ink); }
+  .pipe .ds { justify-content: flex-start; }
+  .pipe .tk.sel .med { outline-offset: 2px; }
+}
+
+
+/* kept pages */
+.pane { display: grid; gap: 18px; min-width: 0; }
+/* compact ticket rows */
+.tl2 { container-type: inline-size; display: grid; }
+.trow { display: grid; grid-template-columns: 104px 150px minmax(0, 1.5fr) minmax(0, 1.3fr) minmax(0, 1fr) 168px; gap: 12px; align-items: center; padding: 8px 8px; border-bottom: 1px solid var(--line); cursor: pointer; font-size: .88rem; line-height: 1.35; }
+.trow > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.trow:hover { background: var(--accent-soft); }
+.trow:last-child { border-bottom: 0; }
+.trow.thead { cursor: default; font-size: .74rem; font-weight: 600; color: var(--muted); padding-block: 4px 6px; letter-spacing: .02em; }
+.trow.thead:hover { background: none; }
+.c-no { font-family: var(--f-mono); font-size: .82rem; font-weight: 500; }
+.c-when { color: var(--muted); font-size: .82rem; font-variant-numeric: tabular-nums; }
+.c-when .age { margin: 0 0 0 8px; padding: 0 8px; font-size: .74rem; vertical-align: 1px; min-width: 26px; text-align: center; }
+.c-eq { font-weight: 600; }
+.c-eq .code { font-weight: 500; font-size: .74rem; margin-left: 2px; }
+.c-eq .hot { color: #fff; background: var(--red); border-radius: 6px; font-size: .7rem; padding: 0 6px; margin-right: 6px; vertical-align: 1px; }
+.c-sy, .c-br { color: var(--muted); font-size: .84rem; }
+.c-st { display: flex; gap: 6px; align-items: center; justify-content: flex-end; }
+.c-st .pill { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.c-st .ev { color: var(--amber); font-size: .76rem; font-weight: 700; white-space: nowrap; }
+@container (max-width: 820px) {
+  .trow { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "no when st" "eq eq eq" "sy sy sy"; gap: 2px 10px; padding: 9px 6px; }
+  .trow.thead, .trow .c-br { display: none; }
+  .c-when:has(.age) .d { display: none; } .c-when .age { margin-left: 0; }
+  .c-no { grid-area: no; } .c-when { grid-area: when; } .c-st { grid-area: st; } .c-eq { grid-area: eq; } .c-sy { grid-area: sy; }
+}
+.ptotal { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.ptotal .big { font-size: 2rem; font-weight: 700; color: var(--accent); line-height: 1; cursor: pointer; font-variant-numeric: tabular-nums; }
+.hotc { color: var(--red); font-weight: 700; cursor: pointer; }
+
+
+/* larger, darker filters & headers */
+.brrow > .muted { font-size: .95rem; font-weight: 600; color: var(--ink); }
+.brc { font-size: .98rem; padding: 8px 14px; border-color: var(--accent-line); color: var(--ink); gap: 10px; }
+.brc b { font-size: 1.02rem; }
+.brc span { font-weight: 600; }
+.brc span.muted { color: var(--ink); opacity: .78; font-weight: 500; }
+.chip { font-size: .98rem; padding: 7px 16px; color: var(--ink); border-color: var(--accent-line); font-weight: 600; }
+.chip.on { color: var(--accent-ink); }
+.trow.thead { font-size: .9rem; font-weight: 700; color: var(--ink); background: var(--sunk); border-bottom: 2px solid var(--accent-line); padding-block: 9px; border-radius: 10px 10px 0 0; letter-spacing: 0; }
+
+
+.filters select.i, .filters input.i { font-size: .98rem; font-weight: 600; color: var(--ink); border-color: var(--accent-line); background: var(--surface); }
+.filters > .muted.small { font-size: .98rem; font-weight: 600; color: var(--ink); }
+.c-when { color: var(--ink); opacity: .85; font-size: .86rem; }
+.c-sy, .c-br { color: var(--ink); opacity: .8; }
+
+
+/* ---------- phone layout ---------- */
+.wrap > *, .pane > * { min-width: 0; }
+.drop svg { width: 22px; height: 22px; flex: none; }
+.drop { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 16px; }
+.sm-only { display: none; }
+@media (max-width: 760px) {
+  .hide-m, .hm { display: none !important; }
+  .sm-only { display: block; }
+  input.i, select.i, textarea.i { font-size: 16px; }
+  h1 { font-size: 1.35rem; }
+  .head { align-items: flex-start; }
+  .panel { padding: 16px 14px; border-radius: 16px; }
+  .pane { gap: 14px; }
+  .chips, .brrow { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; margin-inline: -14px; padding-inline: 14px; padding-bottom: 4px; }
+  .chips::-webkit-scrollbar, .brrow::-webkit-scrollbar { display: none; }
+  .chips > *, .brrow > * { flex: none; }
+  .chip { padding: 6px 14px; font-size: .92rem; }
+  .brc { padding: 6px 12px; font-size: .9rem; }
+  .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .filters > input.i, .filters > .muted.small { grid-column: 1 / -1; }
+  .filters > label.row { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px; }
+  .filters select.i, .filters input.i { width: 100% !important; min-width: 0 !important; }
+  .pipe { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .pipe .tk { grid-template-columns: none; justify-items: center; text-align: center; column-gap: 0; padding-bottom: 2px; }
+  .pipe .tk .seg { left: 0; right: 0; top: 20px; bottom: auto; width: auto; height: 14px; border-radius: 0 !important; }
+  .pipe .tk:first-child .seg { top: 20px; border-radius: 7px 0 0 7px !important; }
+  .pipe .tk:last-child .seg { height: 14px; border-radius: 0 7px 7px 0 !important; }
+  .pipe .tk .med { width: 54px; height: 54px; border-width: 4px; grid-row: auto; }
+  .pipe .tk .med svg { width: 22px; height: 22px; }
+  .pipe .tk .dots, .pipe .ds, .pipe .cnt-m { display: none !important; }
+  .pipe .tk .nb { display: grid; min-width: 36px; height: 30px; padding: 0 8px; font-size: 1rem; margin-top: 6px; border-width: 3px; }
+  .pipe .tk .tt { font-size: .74rem; margin-top: 4px; font-weight: 600; line-height: 1.25; padding: 0 2px; }
+  .pipe .tk.sel .med { outline-offset: 2px; outline-width: 2px; }
+  .ptotal .big { font-size: 1.7rem; }
+  .actbox { padding: 16px 14px; }
+  #nf > .row .btn.pri { flex: 1; padding-block: 13px; font-size: 1.05rem; }
+  .actbox .btn.pri { padding-block: 12px; }
+}
+
+/* modal & toast */
+.modal { position: fixed; inset: 0; background: rgba(10, 20, 22, .5); z-index: 50; display: grid; place-items: center; padding: 16px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.modal .box { background: var(--surface); border-radius: 14px; width: min(760px, 100%); max-height: calc(100% - 20px); overflow: auto; padding: 20px; display: grid; gap: 14px; box-shadow: var(--shadow); }
+.modal .box.wide { width: min(900px, 100%); }
+.modal img.full { max-height: 75vh; width: auto; margin: 0 auto; border-radius: 8px; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(24px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 10px; z-index: 60; font-size: .9rem; box-shadow: var(--shadow); max-width: calc(100% - 32px); }
+.toast.bad { background: var(--red); color: #fff; }
+@media (max-width: 860px) { .toast { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); } }
+.loading { padding: 40px; text-align: center; color: var(--muted); }
+.cmd { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.cmd code { background: var(--sunk); border: 1px solid var(--line); border-radius: 6px; padding: 3px 8px; overflow-wrap: anywhere; min-width: 0; }
+.radios label input[type=checkbox] { flex: none; }
+.demo-banner { background: var(--amber-soft); color: var(--amber); border-radius: 12px; padding: 8px 12px; font-size: .85rem; }
+.paper-wrap { background: var(--sunk); border-radius: 8px; padding: 12px; overflow: auto; }
+.paper-wrap iframe { width: 100%; height: 70vh; border: 1px solid var(--line); background: #fff; border-radius: 4px; }
+</style>
+
+<div id="app"><div class="loading">กำลังโหลด…</div></div>
+
+<script>
+/* ระบบแจ้งซ่อม ซ่อมบำรุงส่วนกลาง — หน้าเว็บ */
+(function () {
+  'use strict';
+  var IS_GAS = !!(window.google && google.script && google.script.run);
+  // แอปบนมือถือ (ติดตั้งจากหน้าเว็บ): เรียก Apps Script ผ่านอินเทอร์เน็ต
+  var REMOTE = !IS_GAS && window.APP_API_URL ? String(window.APP_API_URL) : '';
+  var LIVE = IS_GAS || !!REMOTE;
+  function remote(fn, args) {
+    return fetch(REMOTE, { method: 'POST', redirect: 'follow', credentials: 'omit', cache: 'no-store',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn: fn, args: args }) })
+      .then(function (r) { if (!r.ok) throw new Error('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ (' + r.status + ')'); return r.json(); },
+        function () { throw new Error('ไม่มีสัญญาณอินเทอร์เน็ต หรือเชื่อมต่อเซิร์ฟเวอร์ไม่ได้ ลองใหม่อีกครั้ง'); })
+      .then(function (j) { if (j && j.error) throw new Error(j.error); return j ? j.ok : null; });
+  }
+  var $app = document.getElementById('app');
+  var state = { token: null, boot: null, view: 'dash', filters: { status: 'open', page: 1 }, eqFilters: { page: 1, sort: 'count' } };
+
+  // ---------- helpers ----------
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function h(html) { var t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstElementChild; }
+  function qs(sel, root) { return (root || document).querySelector(sel); }
+  function qsa(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { return null; } }
+  var TH_MON = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+  function thDate(s, withTime) {
+    if (!s) return '-';
+    var m = /^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2}))?/.exec(String(s));
+    if (!m) return esc(s);
+    var out = parseInt(m[3], 10) + ' ' + TH_MON[parseInt(m[2], 10) - 1] + ' ' + String(parseInt(m[1], 10) + 543).slice(2);
+    if (withTime !== false && m[4]) out += ' ' + m[4] + ':' + m[5] + ' น.';
+    return out;
+  }
+  function money(n) { n = parseFloat(n); return isNaN(n) || !n ? '-' : n.toLocaleString('th-TH', { maximumFractionDigits: 2 }) + ' บาท'; }
+  function ago(s) {
+    var d = Date.parse(String(s).replace(' ', 'T') + '+07:00'); if (isNaN(d)) return '';
+    var days = Math.floor((Date.now() - d) / 86400000);
+    if (days < 1) { var hr = Math.floor((Date.now() - d) / 3600000); return hr < 1 ? 'เมื่อสักครู่' : hr + ' ชม.ที่แล้ว'; }
+    return days + ' วันที่แล้ว';
+  }
+  function stClass(st) {
+    var S = state.boot ? state.boot.status : {};
+    return ({}[st]) || (st === S.SUBMIT ? 'st-submit' : st === S.RECEIVED ? 'st-received' : st === S.REPAIR ? 'st-repair' : st === S.PARTS ? 'st-parts' :
+      st === S.OUTSRC ? 'st-out' : st === S.DONE ? 'st-done' : st === S.BRANCH ? 'st-branch' : st === S.REPLACE ? 'st-replace' : '');
+  }
+  function pill(st) { return '<span class="pill ' + stClass(st) + '">' + esc(st) + '</span>'; }
+  function urg(u) { return '<span class="urg' + (String(u).indexOf('ด่วนมาก') === 0 ? ' hot' : '') + '">' + esc(u) + '</span>'; }
+  function isStaff() { var r = state.boot.user.role; return r === 'admin' || r === 'central' || r === 'tech'; }
+  function branchName(c) { var b = (state.boot.branches || []).filter(function (x) { return x.code === c; })[0]; return b ? b.name : c; }
+  function opts(list, sel, blank) {
+    return (blank != null ? '<option value="">' + esc(blank) + '</option>' : '') + list.map(function (o) {
+      var v = typeof o === 'object' ? (o.code || o.name) : o, l = typeof o === 'object' ? (o.name) : o;
+      return '<option value="' + esc(v) + '"' + (v === sel ? ' selected' : '') + '>' + esc(l) + '</option>';
+    }).join('');
+  }
+  var ICON = {
+    mark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/></svg>',
+    dash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>',
+    add: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 8v8M8 12h8"/></svg>',
+    list: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg>',
+    eq: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>',
+    users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18.5 20a6.5 6.5 0 0 0-3-5.5"/></svg>',
+    print: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg>',
+    back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg>',
+    chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M21 20H3"/></svg>',
+    bell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>',
+    cam: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>'
+  };
+
+  function toast(msg, bad) {
+    var t = h('<div class="toast' + (bad ? ' bad' : '') + '" role="status">' + esc(msg) + '</div>');
+    document.body.appendChild(t); setTimeout(function () { t.remove(); }, bad ? 4200 : 2600);
+  }
+  function modal(html, wide) {
+    var m = h('<div class="modal"><div class="box' + (wide ? ' wide' : '') + '">' + html + '</div></div>');
+    m.addEventListener('click', function (e) { if (e.target === m || e.target.closest('[data-close]')) m.remove(); });
+    document.body.appendChild(m);
+    return m;
+  }
+
+  // ---------- server call ----------
+  function call(name) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return new Promise(function (res, rej) {
+      if (IS_GAS) {
+        google.script.run.withSuccessHandler(res).withFailureHandler(function (e) { rej(e); }).api(name, args);
+      } else if (REMOTE) {
+        remote(name, args).then(res, rej);
+      } else {
+        setTimeout(function () {
+          try { res(JSON.parse(JSON.stringify(Core[name].apply(null, args)))); } catch (e) { rej(e); }
+        }, 90);
+      }
+    }).catch(function (e) {
+      var msg = (e && e.message) || String(e);
+      msg = msg.replace(/^(Exception|Error):\s*/, '');
+      if (msg.indexOf('SESSION_EXPIRED') >= 0) { logout(true); throw new Error('หมดเวลาการใช้งาน กรุณาเข้าสู่ระบบใหม่'); }
+      throw new Error(msg);
+    });
+  }
+  // หลายคำสั่งในการเรียกครั้งเดียว: [[name, args], ...] -> [{ok}|{error}]
+  function batch(calls) {
+    return new Promise(function (res, rej) {
+      if (IS_GAS) google.script.run.withSuccessHandler(res).withFailureHandler(rej).apiBatch(calls);
+      else if (REMOTE) remote('batch', [calls]).then(res, rej);
+      else setTimeout(function () {
+        res(calls.map(function (c) { try { return { ok: JSON.parse(JSON.stringify(Core[c[0]].apply(null, c[1]))) }; } catch (e) { return { error: e.message }; } }));
+      }, 90);
+    });
+  }
+  // จำข้อมูลล่าสุดไว้ในเครื่อง เพื่อแสดงทันทีขณะรอข้อมูลใหม่
+  function cacheKey(k) { return 'mt_c_' + (state.boot ? state.boot.user.username : '') + '_' + k; }
+  function cacheGet(k) { try { var v = store(cacheKey(k)); return v ? JSON.parse(v) : null; } catch (e) { return null; } }
+  function cacheSet(k, v) { try { store(cacheKey(k), JSON.stringify(v)); } catch (e) { } }
+  var SKEL = '<div class="panel sk"><i></i><i></i><i></i><i></i><i></i><i></i></div>';
+  function authed(name) { var a = Array.prototype.slice.call(arguments, 1); return call.apply(null, [name, state.token].concat(a)); }
+  function busy(btn, p) {
+    if (btn) { btn.disabled = true; }
+    return p.then(function (r) { if (btn) btn.disabled = false; return r; }, function (e) { if (btn) btn.disabled = false; toast(e.message, true); throw e; });
+  }
+
+  // ---------- login ----------
+  function renderLogin(msg) {
+    var demo = !LIVE ? '<div class="demo-box"><b>โหมดตัวอย่าง</b> เลือกบัญชีเพื่อทดลองแต่ละบทบาท<div class="acc">' +
+      [['ma', 'ma1234', 'สาขา MA'], ['k3', 'k31234', 'สาขา K3'], ['central', 'central1234', 'ส่วนกลาง'], ['tech1', 'tech1234', 'ช่าง'], ['admin', 'admin1234', 'ผู้ดูแล']].map(function (a) {
+        return '<button type="button" data-u="' + a[0] + '" data-p="' + a[1] + '">' + a[2] + '</button>';
+      }).join('') + '</div></div>' : '';
+    $app.innerHTML = '<div class="login"><form class="login-card" id="loginForm" autocomplete="on">' +
+      '<div class="brand"><div class="mark">' + ICON.mark + '</div><div><div class="brand-t">ระบบแจ้งซ่อม</div><div class="brand-s">ซ่อมบำรุงส่วนกลาง · 5 สาขา</div></div></div>' +
+      '<div><h1>เข้าสู่ระบบ</h1><div class="muted small">สาขาใช้บัญชีของสาขา ส่วนกลางและช่างใช้บัญชีส่วนตัว</div></div>' +
+      '<label class="f"><span>ชื่อผู้ใช้</span><input class="i" id="lu" name="username" autocomplete="username" required></label>' +
+      '<label class="f"><span>รหัสผ่าน</span><input class="i" id="lp" name="password" type="password" autocomplete="current-password" required></label>' +
+      '<div class="err" id="lerr">' + esc(msg || '') + '</div>' +
+      '<button class="btn pri" id="lbtn" type="submit">เข้าสู่ระบบ</button>' + demo + '</form></div>';
+    var f = qs('#loginForm');
+    qsa('[data-u]', f).forEach(function (b) { b.onclick = function () { qs('#lu').value = b.dataset.u; qs('#lp').value = b.dataset.p; doLogin(); }; });
+    f.onsubmit = function (e) { e.preventDefault(); doLogin(); };
+    function doLogin() {
+      var btn = qs('#lbtn'); btn.disabled = true; qs('#lerr').textContent = '';
+      call('login', qs('#lu').value, qs('#lp').value).then(function (r) {
+        state.token = r.token; store('mt_token', r.token); start();
+      }).catch(function (er) { btn.disabled = false; qs('#lerr').textContent = er.message; });
+    }
+    try { qs('#lu').focus(); } catch (e) { }
+  }
+  function logout(expired) {
+    if (state.token && !expired) call('logout', state.token).catch(function () { });
+    state.token = null; state.boot = null; store('mt_token', null); store('mt_boot', null);
+    renderLogin(expired ? 'หมดเวลาการใช้งาน กรุณาเข้าสู่ระบบใหม่' : '');
+  }
+  function start() {
+    var shown = false, cb = null;
+    try { cb = JSON.parse(store('mt_boot') || 'null'); } catch (e) { cb = null; }
+    function open(b) {
+      state.boot = b; renderShell(); shown = true;
+      if (state.deep) { var d = state.deep; state.deep = null; go('ticket', d); } else go('dash');
+    }
+    // เปิดหน้าทันทีจากข้อมูลครั้งก่อน แล้วค่อยอัปเดต
+    if (cb && cb.token === state.token && cb.boot) open(cb.boot);
+    else $app.innerHTML = '<div class="login"><div class="login-card sk"><i></i><i></i><i></i></div></div>';
+    var p = batch([['bootstrap', [state.token]], ['dashboard', [state.token]], ['listTickets', [state.token, dashListDefault()]]]);
+    state.dashPromise = p.then(function (r) { if (r[1].error) throw new Error(r[1].error); return r[1].ok; });
+    state.dashListPromise = p.then(function (r) { if (r[2].error) throw new Error(r[2].error); return r[2].ok; });
+    p.then(function (r) {
+      if (r[0].error) throw new Error(r[0].error);
+      store('mt_boot', JSON.stringify({ token: state.token, boot: r[0].ok }));
+      if (!shown) open(r[0].ok); else state.boot = r[0].ok;
+    }).catch(function (e) {
+      var msg = String((e && e.message) || e);
+      if (msg.indexOf('SESSION_EXPIRED') >= 0) { store('mt_boot', null); logout(true); return; }
+      if (!shown) $app.innerHTML = '<div class="login"><div class="login-card"><div class="err">' + esc(msg) + '</div><button class="btn" type="button" onclick="location.reload()">ลองใหม่</button></div></div>';
+      else toast(msg, true);
+    });
+  }
+
+  // ---------- shell ----------
+  function navItems() {
+    var r = state.boot.user.role, items = [['dash', 'ภาพรวม', ICON.dash], ['new', 'แจ้งซ่อม', ICON.add], ['list', 'รายการซ่อม', ICON.list], ['equip', 'อุปกรณ์', ICON.eq], ['report', 'รายงาน', ICON.chart]];
+    if (r === 'admin') { items.push(['users', 'ผู้ใช้งาน', ICON.users, 'adm']); items.push(['settings', 'ตั้งค่า', ICON.bell, 'adm']); }
+    return items;
+  }
+  function renderShell() {
+    var u = state.boot.user;
+    state.pane = null; state.tk = {}; state.rows = {}; state.inflight = {}; state.backTo = null;
+    var who = esc(u.name) + '<div class="muted small">' + esc(state.boot.roles[u.role]) + (u.branch ? ' · ' + esc(branchName(u.branch)) : '') + '</div>';
+    $app.innerHTML = '<div class="shell"><aside class="rail"><div class="brand"><div class="mark">' + ICON.mark + '</div><div><div class="brand-t">ระบบแจ้งซ่อม</div><div class="brand-s">' + esc(state.boot.orgName) + '</div></div></div>' +
+      '<div class="nav-l">เมนู</div><nav class="nav" id="nav">' + navItems().map(function (n) { return '<button type="button" data-v="' + n[0] + '"' + (n[3] ? ' class="' + n[3] + '"' : '') + '>' + n[2] + '<span>' + n[1] + '</span></button>'; }).join('') + '</nav>' +
+      '<div class="me"><div class="me-n">' + who + '</div><div class="row"><button class="btn sm" id="pwBtn" type="button">เปลี่ยนรหัสผ่าน</button><button class="btn sm ghost" id="outBtn" type="button">ออกจากระบบ</button></div></div></aside>' +
+      '<main class="main"><div class="mob-top"><div class="brand"><div class="mark" style="width:34px;height:34px">' + ICON.mark + '</div><div><div class="brand-t" style="font-size:1rem">ระบบแจ้งซ่อม</div><div class="brand-s">' + esc(u.name) + '</div></div></div><button class="btn sm" id="meBtn" type="button">บัญชี</button></div><div class="wrap" id="view"></div></main></div>';
+    qsa('#nav button').forEach(function (b) { b.onclick = function () { go(b.dataset.v); }; });
+    qs('#outBtn').onclick = function () { logout(); };
+    qs('#pwBtn').onclick = changePw;
+    qs('#meBtn').onclick = function () {
+      var adm = state.boot.user.role === 'admin' ? '<div class="row"><button class="btn" id="m3" type="button">' + ICON.users + 'ผู้ใช้งาน</button><button class="btn" id="m4" type="button">' + ICON.bell + 'ตั้งค่า</button></div>' : '';
+      var m = modal('<h2>บัญชีของฉัน</h2><div>' + who + '</div>' + adm + '<div class="row"><button class="btn" id="m1" type="button">เปลี่ยนรหัสผ่าน</button><button class="btn dng" id="m2" type="button">ออกจากระบบ</button><span class="spacer"></span><button class="btn ghost" data-close type="button">ปิด</button></div>');
+      qs('#m1', m).onclick = function () { m.remove(); changePw(); };
+      if (adm) { qs('#m3', m).onclick = function () { m.remove(); go('users'); }; qs('#m4', m).onclick = function () { m.remove(); go('settings'); }; } qs('#m2', m).onclick = function () { m.remove(); logout(); };
+    };
+  }
+  // หน้าที่เปิดแล้วเก็บไว้ (ซ่อน) กลับมาแสดงทันทีพร้อมตำแหน่งเลื่อนเดิม แล้วค่อยอัปเดตข้อมูลเบื้องหลัง
+  var KEEP = { dash: 1, list: 1, equip: 1, report: 1 };
+  var VIEWS = { dash: viewDash, new: viewNew, list: viewList, equip: viewEquip, users: viewUsers, ticket: viewTicket, settings: viewSettings, report: viewReport };
+  function go(v, arg) {
+    var host = qs('#view'), cur = state.pane;
+    if (cur) { cur._scroll = window.scrollY; cur.hidden = true; }
+    if (v === 'ticket' && state.view !== 'ticket') state.backTo = state.view;
+    state.view = v;
+    var navV = v === 'ticket' ? (state.backTo || 'list') : v;
+    qsa('#nav button').forEach(function (b) { b.classList.toggle('on', b.dataset.v === navV); });
+    var pane = KEEP[v] ? host.querySelector('[data-pane="' + v + '"]') : null;
+    if (pane) {
+      pane.hidden = false; state.pane = pane;
+      window.scrollTo(0, pane._scroll || 0);
+      if (pane._refresh) pane._refresh();
+      return;
+    }
+    qsa('[data-pane]', host).forEach(function (p) { if (!KEEP[p.dataset.pane]) p.remove(); });
+    pane = h('<div class="pane" data-pane="' + v + '">' + SKEL + '</div>');
+    host.appendChild(pane); state.pane = pane;
+    window.scrollTo(0, 0);
+    VIEWS[v](pane, arg);
+  }
+  function openList(f) { state.filters = f; var p = qs('[data-pane="list"]'); if (p) p.remove(); go('list'); }
+  function goBack() { go(state.backTo && KEEP[state.backTo] ? state.backTo : 'dash'); }
+  function changePw() {
+    var m = modal('<h2>เปลี่ยนรหัสผ่าน</h2><form id="pwf" class="stack"><label class="f"><span>รหัสผ่านเดิม</span><input class="i" type="password" id="pw0" autocomplete="current-password" required></label>' +
+      '<label class="f"><span>รหัสผ่านใหม่ (อย่างน้อย 6 ตัว)</span><input class="i" type="password" id="pw1" autocomplete="new-password" required minlength="6"></label>' +
+      '<div class="row"><button class="btn pri" type="submit">บันทึก</button><button class="btn ghost" type="button" data-close>ยกเลิก</button></div></form>');
+    qs('#pwf', m).onsubmit = function (e) {
+      e.preventDefault();
+      busy(e.submitter || e.target.querySelector("[type=submit]"), authed('changePassword', qs('#pw0', m).value, qs('#pw1', m).value)).then(function () { m.remove(); toast('เปลี่ยนรหัสผ่านแล้ว'); });
+    };
+  }
+
+  // ---------- dashboard ----------
+  function dashListDefault() { return { status: 'open', sort: 'newest', page: 1, size: 30 }; }
+  function viewDash(el) {
+    el._refresh = function () {
+      authed('dashboard').then(function (d) { cacheSet('dash', d); if (state.view === 'dash') drawDash(el, d, false); }).catch(function () { });
+      loadDashList(el, true, true);
+    };
+    var cached = cacheGet('dash');
+    state.dashList = state.dashList || dashListDefault();
+    if (cached) drawDash(el, cached, true);
+    var p = state.dashPromise || authed('dashboard'); state.dashPromise = null;
+    p.then(function (d) { cacheSet('dash', d); if (state.view === 'dash') drawDash(el, d, false); })
+      .catch(function (e) { if (!cached && state.view === 'dash') el.innerHTML = '<div class="panel err">' + esc(e.message) + '</div>'; });
+  }
+  function drawDash(el, d, refreshing) {
+    var staff = isStaff(), u = state.boot.user, S = state.boot.status;
+    var statusOrder = [S.SUBMIT, S.RECEIVED, S.REPAIR, S.PARTS, S.OUTSRC];
+    var maxS = Math.max.apply(null, statusOrder.map(function (s) { return d.byStatus[s] || 0; }).concat([1]));
+    var evAvg = d.evalAvg ? (d.evalAvg.reduce(function (a, b) { return a + b; }, 0) / 5).toFixed(2) : '-';
+    var keepList = qs('#dList', el);
+    el.innerHTML = '<div class="head"><div><h1>' + (staff ? 'ภาพรวมงานซ่อมทุกสาขา' : 'ภาพรวมงานซ่อม ' + esc(branchName(u.branch))) + '</h1><div class="muted small">ข้อมูล ณ ' + thDate(new Date(Date.now() + 7 * 3600e3).toISOString().slice(0, 16).replace('T', ' ')) + (refreshing ? ' <span class="refreshing">กำลังอัปเดต</span>' : '') + '</div></div>' +
+      '<button class="btn pri hide-m" type="button" id="dNew">' + ICON.add + 'แจ้งซ่อมใหม่</button></div>' +
+      (!LIVE ? '<div class="demo-banner"><b>นี่คือหน้าตัวอย่าง ไม่ใช่ระบบจริง</b> ข้อมูลที่บันทึกที่นี่อยู่ในหน้าจอนี้เท่านั้น ไม่ส่งเข้า Google Sheet และหายเมื่อรีเฟรช เครื่องอื่นจะมองไม่เห็น ใช้งานจริงผ่าน URL เว็บแอป (script.google.com …/exec)</div>' : '') +
+      pipeline(d) +
+      '<section class="panel" id="dListP"><div class="ptitle"><h2>รายการแจ้งซ่อมที่ค้าง</h2><div class="row hide-m"><button class="btn sm" type="button" id="dRep">' + ICON.chart + 'รายงาน</button><button class="btn sm" type="button" id="dAll">เปิดหน้ารายการซ่อม</button></div></div><div id="dListBox"></div></section>';
+    if (keepList) { var box = qs('#dListBox', el); box.parentNode.replaceChild(keepList, box); }
+    qs('#dNew').onclick = function () { go('new'); };
+    qs('#dRep').onclick = function () { go('report'); };
+    qs('#dAll').onclick = function () { openList({ status: 'open', page: 1 }); };
+    function setList(patch) {
+      var f = state.dashList; for (var k in patch) f[k] = patch[k]; f.page = 1;
+      qsa('[data-st]', el).forEach(function (x) { x.classList.toggle('sel', f.status === x.dataset.st && !f.urgent); });
+      qsa('.brc', el).forEach(function (x) { x.classList.toggle('on', f.branch === x.dataset.br); });
+      loadDashList(el, true); qs('#dListP').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    qsa('[data-kpi]', el).forEach(function (k) {
+      k.onclick = function () {
+        var v = k.dataset.kpi;
+        if (v === 'd:open') setList({ status: 'open', urgent: '' });
+        else if (v === 'd:urgent') setList({ status: 'open', urgent: '1' });
+        else if (v.indexOf('d:') === 0) setList({ status: v.slice(2), urgent: '' });
+        else openList({ status: v, page: 1 });
+      };
+    });
+    qsa('[data-urg]', el).forEach(function (r) { r.onclick = function () { setList({ status: 'open', urgent: '1' }); }; });
+    qsa('[data-st]', el).forEach(function (r) {
+      r.onclick = function () { setList({ status: r.dataset.st, urgent: '' }); };
+      r.onkeydown = function (e) { if (e.key === 'Enter') r.onclick(); };
+    });
+    qsa('[data-br]', el).forEach(function (r) { r.onclick = function () { var b = r.dataset.br; setList({ branch: state.dashList.branch === b ? '' : b }); }; });
+    if (!keepList) loadDashList(el, false);
+  }
+  // งานค้างตามขั้นตอน: ริบบิ้น 5 ขั้น พร้อมจำนวนและแยกสาขา
+  var PIPE_ICON = [
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8l3 3v13H5V4z"/><path d="M9 4v3h6V4"/><path d="M9 12h6M9 16h4"/></svg>',
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13l2.5-7h13L21 13v6H3z"/><path d="M3 13h5l1.5 2h5L16 13h5"/><path d="M9.5 8.5l1.8 1.8 3.4-3.4"/></svg>',
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3.5 17.5a1.8 1.8 0 0 0 2.5 2.5l5.8-5.8a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.2-.3-.3-2.2z"/></svg>',
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8l8-4 8 4v8l-8 4-8-4z"/><path d="M4 8l8 4 8-4M12 12v8"/><path d="M8 6l8 4"/></svg>',
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7h11v9H2z"/><path d="M13 10h4l3 3v3h-7"/><circle cx="6" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg>'
+  ];
+  function pipeline(d) {
+    var S = state.boot.status, staff = isStaff(), f = state.dashList || {};
+    var stages = [[S.SUBMIT, 'รอรับเรื่อง'], [S.RECEIVED, 'รับเรื่องแล้ว'], [S.REPAIR, 'กำลังซ่อม'], [S.PARTS, 'รออะไหล่/ค้างซ่อม'], [S.OUTSRC, 'ส่งซ่อมภายนอก']];
+    var sb = d.byStatusBranch || {};
+    var html = '<section class="panel"><div class="ptitle"><h2 class="ptotal">งานค้างทั้งหมด <span class="big" data-st="open" role="button" tabindex="0">' + d.openCount.toLocaleString() + '</span> งาน</h2><span class="muted small">' + (d.urgentOpen ? '<span class="hotc" data-urg="1" role="button" tabindex="0">ด่วนมาก ' + d.urgentOpen + '</span> · ' : '') + 'เฉลี่ยแจ้งจนปิดงาน ' + (d.avgDays == null ? '-' : d.avgDays + ' วัน') + '</span></div>' +
+      '<div class="track pipe" role="list">' + stages.map(function (st, i) {
+        var n = d.byStatus[st[0]] || 0, by = sb[st[0]] || {};
+        var br = staff ? state.boot.branches.filter(function (b) { return by[b.code]; }).map(function (b) { return '<span class="pb">' + esc(b.code) + ' <b>' + by[b.code] + '</b></span>'; }).join('') : '';
+        var on = f.status === st[0] && !f.urgent;
+        return '<div class="tk s' + (i + 1) + (n ? '' : ' off') + (on ? ' sel' : '') + ' click" role="listitem" tabindex="0" data-st="' + esc(st[0]) + '" title="กดเพื่อดูรายการ">' +
+          '<span class="seg"></span><span class="med">' + PIPE_ICON[i] + '</span><span class="dots"></span><span class="nb cnt">' + n.toLocaleString() + '</span>' +
+          '<div class="tt">' + esc(st[1]) + ' <span class="cnt-m">' + n.toLocaleString() + '</span></div>' +
+          '<div class="ds">' + (n ? (br || 'งาน') : 'ไม่มีงาน') + '</div></div>';
+      }).join('') + '</div>';
+    if (staff) {
+      html += '<div class="brrow"><span class="muted small">แยกตามสาขา</span>' + state.boot.branches.map(function (b) {
+        var x = d.byBranch[b.code] || { open: 0, month: 0 };
+        return '<button type="button" class="brc' + (f.branch === b.code ? ' on' : '') + '" data-br="' + b.code + '"><b>' + esc(b.code) + '</b><span>ค้าง ' + x.open + '</span><span class="muted">เดือนนี้ ' + x.month + '</span></button>';
+      }).join('') + '</div>';
+    }
+    return html + '</section>';
+  }
+  function loadDashList(el, fresh, silent) {
+    var f = state.dashList, S = state.boot.status, staff = isStaff();
+    var box = qs('#dListBox', el) || qs('#dList', el); if (!box) return;
+    var chips = [['open', 'ทั้งหมด'], [S.SUBMIT, 'รอรับเรื่อง'], [S.RECEIVED, 'รับเรื่องแล้ว'], [S.REPAIR, 'กำลังซ่อม'], [S.PARTS, 'รออะไหล่'], [S.OUTSRC, 'ส่งซ่อมภายนอก']];
+    function draw(r, stale) {
+      var pages = Math.max(1, Math.ceil(r.total / r.size));
+      var html = '<div id="dList" class="stack"><div class="chips">' + chips.map(function (c) { return '<button type="button" class="chip' + (f.status === c[0] && !f.urgent ? ' on' : '') + '" data-ds="' + esc(c[0]) + '">' + c[1] + '</button>'; }).join('') +
+        '<button type="button" class="chip' + (f.urgent ? ' on' : '') + '" data-du="1">ด่วนมาก</button></div>' +
+        '<div class="filters">' + (staff ? '<select class="i" id="dBr" style="width:auto">' + opts(state.boot.branches, f.branch || '', 'ทุกสาขา') + '</select>' : '') +
+        '<select class="i" id="dSort" style="width:auto">' + opts([{ code: 'newest', name: 'แจ้งล่าสุดก่อน' }, { code: 'oldest', name: 'ค้างนานสุดก่อน' }], f.sort) + '</select>' +
+        '<span class="muted small">' + r.total.toLocaleString() + ' งาน' + (stale ? ' · <span class="refreshing">กำลังอัปเดต</span>' : '') + '</span></div>' +
+        ticketList(r.rows, 'ไม่มีงานค้างตามเงื่อนไขนี้') +
+        (pages > 1 ? '<div class="pager"><span class="muted">หน้า ' + r.page + '/' + pages + '</span><span class="row"><button class="btn sm" type="button" id="dPrev"' + (r.page <= 1 ? ' disabled' : '') + '>ก่อนหน้า</button><button class="btn sm" type="button" id="dNext"' + (r.page >= pages ? ' disabled' : '') + '>ถัดไป</button></span></div>' : '') + '</div>';
+      var cur = qs('#dListBox', el) || qs('#dList', el);
+      var n = h(html); cur.parentNode.replaceChild(n, cur);
+      bindTickets(n);
+      qsa('[data-ds]', n).forEach(function (c) { c.onclick = function () { f.status = c.dataset.ds; f.urgent = ''; f.page = 1; loadDashList(el, true); }; });
+      qs('[data-du]', n).onclick = function () { f.urgent = f.urgent ? '' : '1'; f.status = 'open'; f.page = 1; loadDashList(el, true); };
+      if (qs('#dBr', n)) qs('#dBr', n).onchange = function () { f.branch = this.value; f.page = 1; loadDashList(el, true); };
+      qs('#dSort', n).onchange = function () { f.sort = this.value; f.page = 1; loadDashList(el, true); };
+      if (qs('#dPrev', n)) { qs('#dPrev', n).onclick = function () { f.page--; loadDashList(el, true); }; qs('#dNext', n).onclick = function () { f.page++; loadDashList(el, true); }; }
+    }
+    var isDefault = f.status === 'open' && f.sort === 'newest' && f.page === 1 && !f.branch && !f.urgent;
+    var cached = isDefault ? cacheGet('dashlist2') : null;
+    if (cached && !fresh) draw(cached, true);
+    else if (!silent) { var cur = qs('#dList', el); if (cur) cur.style.opacity = .5; else box.innerHTML = '<div class="sk"><i></i><i></i><i></i><i></i></div>'; }
+    var p = (!fresh && state.dashListPromise) || authed('listTickets', f); state.dashListPromise = null;
+    p.then(function (r) { if (isDefault) cacheSet('dashlist2', r); if (state.view === 'dash') draw(r, false); })
+      .catch(function (e) { toast(e.message, true); });
+  }
+
+  // ---------- report ----------
+  function viewReport(el) {
+    var staff = isStaff();
+    el._refresh = function () { viewReport(el); };
+    state.repBranch = state.repBranch || '';
+    var key = 'report_' + state.repBranch, cached = cacheGet(key);
+    if (cached) drawReport(el, cached, true);
+    authed('dashboard', { branch: state.repBranch }).then(function (d) { cacheSet(key, d); if (state.view === 'report') drawReport(el, d, false); })
+      .catch(function (e) { if (!cached) el.innerHTML = '<div class="panel err">' + esc(e.message) + '</div>'; });
+  }
+  function drawReport(el, d, refreshing) {
+    var staff = isStaff(), u = state.boot.user;
+    var evAvg = d.evalAvg ? (d.evalAvg.reduce(function (a, b) { return a + b; }, 0) / 5).toFixed(2) : '-';
+    var cats = Object.keys(d.byCategory || {}).sort(function (a, b) { return d.byCategory[b] - d.byCategory[a]; });
+    var maxC = Math.max.apply(null, cats.map(function (c) { return d.byCategory[c]; }).concat([1]));
+    el.innerHTML = '<div class="head"><div><h1>รายงาน</h1><div class="muted small">' + (staff ? (state.repBranch ? esc(branchName(state.repBranch)) : 'ทุกสาขา') : esc(branchName(u.branch))) + ' · 12 เดือนล่าสุด' + (refreshing ? ' <span class="refreshing">กำลังอัปเดต</span>' : '') + '</div></div>' +
+      (staff ? '<select class="i" id="rBr" style="width:auto">' + opts(state.boot.branches, state.repBranch, 'ทุกสาขา') + '</select>' : '') + '</div>' +
+      '<div class="kpis k4">' +
+      '<div class="kpi"><span class="l">แจ้งซ่อม 12 เดือน</span><span class="v">' + (d.yearCount || 0).toLocaleString() + '</span></div>' +
+      '<div class="kpi"><span class="l">งานค้างตอนนี้</span><span class="v">' + d.openCount + '</span></div>' +
+      '<div class="kpi"><span class="l">เฉลี่ยแจ้งจนปิดงาน</span><span class="v">' + (d.avgDays == null ? '-' : d.avgDays) + '<small> วัน</small></span></div>' +
+      '<div class="kpi"><span class="l">คะแนนประเมินเฉลี่ย</span><span class="v">' + evAvg + '<small> /5 · ' + d.evalCount + ' ครั้ง</small></span></div></div>' +
+      '<section class="panel"><h2>จำนวนแจ้งซ่อม 12 เดือนล่าสุด</h2>' + monthChart(d.monthly) + '</section>' +
+      '<div class="dash"><div class="stack">' +
+      '<section class="panel"><div class="ptitle"><h2>งานที่ค้างนานที่สุด</h2><span class="muted small">10 อันดับ</span></div>' + ticketList(d.recentOpen, 'ไม่มีงานค้าง') + '</section>' +
+      '</div><div class="stack">' +
+      '<section class="panel"><h2>อุปกรณ์ที่ซ่อมบ่อย (12 เดือน)</h2><div class="tscroll"><table class="t"><tbody>' +
+      (d.topEquip.length ? d.topEquip.map(function (e, i) { return '<tr class="click" data-eq="' + esc(e.code) + '"><td class="muted num">' + (i + 1) + '</td><td><span class="code">' + esc(e.code) + '</span></td><td>' + esc(e.name) + '</td><td class="num" style="white-space:nowrap"><b>' + e.count + '</b> ครั้ง</td></tr>'; }).join('') : '<tr><td class="muted">ยังไม่มีข้อมูล</td></tr>') +
+      '</tbody></table></div></section>' +
+      '<section class="panel"><h2>แยกตามประเภทอุปกรณ์</h2><div class="bars">' + (cats.length ? cats.map(function (c) { return '<div class="bar" style="grid-template-columns:150px 1fr 44px"><span class="small">' + esc(c) + '</span><div class="t"><i style="width:' + (d.byCategory[c] / maxC * 100) + '%"></i></div><b>' + d.byCategory[c] + '</b></div>'; }).join('') : '<div class="muted">ยังไม่มีข้อมูล</div>') + '</div></section>' +
+      '<section class="panel"><h2>ผลประเมินหลังซ่อม</h2>' + (d.evalAvg ? '<div class="bars">' + state.boot.evalQuestions.map(function (q, i) {
+        return '<div class="bar" style="grid-template-columns:minmax(0,1fr) 70px 36px"><span class="small">' + esc(q) + '</span><div class="t"><i style="width:' + (d.evalAvg[i] / 5 * 100) + '%;background:var(--amber)"></i></div><b>' + d.evalAvg[i].toFixed(1) + '</b></div>';
+      }).join('') + '</div>' : '<div class="muted">ยังไม่มีการประเมิน</div>') + '</section>' +
+      '</div></div>';
+    if (qs('#rBr', el)) qs('#rBr', el).onchange = function () { state.repBranch = this.value; viewReport(el); };
+    qsa('[data-eq]', el).forEach(function (r) { r.onclick = function () { showEquip(r.dataset.eq); }; });
+    bindTickets(el);
+  }
+  function kpi(l, v, filt, alert, tone) { return '<div class="kpi click' + (alert ? ' alert' : '') + (tone ? ' ' + tone : '') + '" data-kpi="' + esc(filt) + '" role="button" tabindex="0"><span class="l">' + l + '</span><span class="v">' + v + '</span></div>'; }
+  function monthChart(rows) {
+    var W = 640, H = 190, pl = 30, pb = 26, pt = 18, max = Math.max.apply(null, rows.map(function (r) { return r.count; }).concat([1]));
+    var nice = Math.ceil(max / 20) * 20 || 20, bw = (W - pl - 8) / rows.length;
+    var y = function (v) { return pt + (H - pt - pb) * (1 - v / nice); };
+    var s = '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="จำนวนแจ้งซ่อมรายเดือน">';
+    [0, .5, 1].forEach(function (f) { var v = Math.round(nice * f); s += '<line x1="' + pl + '" x2="' + W + '" y1="' + y(v) + '" y2="' + y(v) + '" stroke="var(--line)" stroke-width="1"/><text x="' + (pl - 6) + '" y="' + (y(v) + 3) + '" text-anchor="end">' + v + '</text>'; });
+    rows.forEach(function (r, i) {
+      var x = pl + i * bw + bw * .18, w = bw * .64, last = i === rows.length - 1;
+      s += '<rect x="' + x + '" y="' + y(r.count) + '" width="' + w + '" height="' + (H - pb - y(r.count)) + '" rx="3" fill="' + (last ? 'var(--accent)' : 'var(--accent-soft)') + '"/>';
+      if (r.count) s += '<text x="' + (x + w / 2) + '" y="' + (y(r.count) - 5) + '" text-anchor="middle" class="lbl">' + r.count + '</text>';
+      var m = parseInt(r.month.slice(5, 7), 10);
+      s += '<text x="' + (x + w / 2) + '" y="' + (H - 9) + '" text-anchor="middle">' + TH_MON[m - 1] + '</text>';
+    });
+    return s + '</svg>';
+  }
+  function shortDate(s0) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(s0 || ''));
+    return m ? parseInt(m[3], 10) + ' ' + TH_MON[parseInt(m[2], 10) - 1] + ' ' + String(parseInt(m[1], 10) + 543).slice(2) : '-';
+  }
+  function ticketList(rows, emptyMsg) {
+    if (!rows.length) return '<div class="empty">' + esc(emptyMsg) + '</div>';
+    rows.forEach(function (t) { state.rows[t.ticketNo] = t; });
+    return '<div class="tl2"><div class="trow thead" aria-hidden="true"><span>เลขที่</span><span>แจ้งเมื่อ · ค้าง (วัน)</span><span>อุปกรณ์</span><span>อาการ</span><span>สาขา · แผนก</span><span>สถานะ</span></div>' +
+      rows.map(function (t) {
+        var hot = String(t.urgency).indexOf('ด่วนมาก') === 0;
+        return '<div class="trow" data-t="' + esc(t.ticketNo) + '" role="button" tabindex="0" title="' + esc(t.equipName + ' — ' + t.symptom + ' (' + t.urgency + ')') + '">' +
+          '<span class="c-no">' + esc(t.ticketNo) + '</span>' +
+          '<span class="c-when"><span class="d">' + shortDate(t.createdAt) + '</span>' + ageBadge(t) + '</span>' +
+          '<span class="c-eq">' + (hot ? '<b class="hot">ด่วนมาก</b>' : '') + esc(t.equipName) + ' <span class="code">' + esc(t.equipCode) + '</span></span>' +
+          '<span class="c-sy">' + esc(t.symptom) + '</span>' +
+          '<span class="c-br">' + esc(t.branch) + ' · ' + esc(t.department) + (t.technician ? ' · ' + esc(t.technician) : '') + '</span>' +
+          '<span class="c-st">' + pill(t.status) + (t.evalScore !== '' && t.evalScore != null && t.stage >= 4 ? '<span class="ev">★ ' + esc(t.evalScore) + '</span>' : '') + '</span></div>';
+      }).join('') + '</div>';
+  }
+  // จำนวนวันที่ค้าง (นับจากวันแจ้ง) เฉพาะงานที่ยังไม่ปิด
+  function daysOpen(t) {
+    if (t.stage == null || t.stage < 0 || t.stage >= 3) return null;
+    var d = Date.parse(String(t.createdAt).replace(' ', 'T') + '+07:00');
+    return isNaN(d) ? null : Math.max(0, Math.floor((Date.now() - d) / 86400000));
+  }
+  function ageBadge(t) {
+    var n = daysOpen(t); if (n == null) return '';
+    var cls = n >= 7 ? 'a3' : n >= 3 ? 'a2' : 'a1';
+    return '<span class="age ' + cls + '" title="ค้าง ' + n.toLocaleString() + ' วัน">' + n.toLocaleString() + '</span>';
+  }
+  function miniTrack(stg) {
+    if (stg == null || stg < 0) return '';
+    var h = '<span class="mini" title="ขั้นตอน ' + (stg + 1) + '/5">';
+    for (var i = 0; i < 5; i++) h += '<i class="' + (i <= stg ? 's' + (i + 1) : '') + '"></i>';
+    return h + '</span>';
+  }
+  function bindTickets(el) {
+    qsa('[data-t]', el).forEach(function (r) {
+      var tm;
+      r.addEventListener('pointerenter', function () { tm = setTimeout(function () { prefetch(r.dataset.t); }, 90); });
+      r.addEventListener('pointerleave', function () { clearTimeout(tm); });
+      r.addEventListener('touchstart', function () { prefetch(r.dataset.t); }, { passive: true });
+      r.onclick = function () { go('ticket', r.dataset.t); };
+      r.onkeydown = function (e) { if (e.key === 'Enter') go('ticket', r.dataset.t); };
+    });
+  }
+
+  // ---------- list ----------
+  function viewList(el) {
+    state.filters.size = 50;
+    var f = state.filters, S = state.boot.status, staff = isStaff();
+    var chips = [['open', 'งานค้างทั้งหมด'], [S.SUBMIT, 'รอรับเรื่อง'], [S.RECEIVED, 'รับเรื่องแล้ว'], [S.REPAIR, 'กำลังซ่อม'], [S.PARTS, 'รออะไหล่'], [S.OUTSRC, 'ส่งซ่อมภายนอก'],
+      ['toEval', 'รอประเมิน'], [S.DONE, 'ซ่อมเสร็จ'], [S.BRANCH, 'ส่งกลับสาขา'], [S.REPLACE, 'ซ่อมไม่ได้'], ['all', 'ทั้งหมด']];
+    el.innerHTML = '<div class="head"><h1>รายการแจ้งซ่อม</h1><button class="btn pri hide-m" type="button" id="lNew">' + ICON.add + 'แจ้งซ่อมใหม่</button></div>' +
+      '<section class="panel stack"><div class="chips" id="chips">' + chips.map(function (c) { return '<button type="button" class="chip' + ((f.status || 'open') === c[0] ? ' on' : '') + '" data-s="' + esc(c[0]) + '">' + c[1] + '</button>'; }).join('') + '</div>' +
+      '<div class="filters">' + (staff ? '<select class="i" id="fBr" style="width:auto">' + opts(state.boot.branches, f.branch || '', 'ทุกสาขา') + '</select>' : '') +
+      '<select class="i" id="fCat" style="width:auto">' + opts(state.boot.categories.map(function (c) { return c.name; }), f.category || '', 'ทุกประเภท') + '</select>' +
+      '<input class="i" id="fQ" placeholder="ค้นหาเลขที่ อุปกรณ์ อาการ ผู้แจ้ง…" value="' + esc(f.q || '') + '" style="flex:1;min-width:180px">' +
+      '<label class="row small muted">ตั้งแต่ <input class="i" type="date" id="fFrom" value="' + esc(f.from || '') + '" style="width:auto"></label>' +
+      '<label class="row small muted">ถึง <input class="i" type="date" id="fTo" value="' + esc(f.to || '') + '" style="width:auto"></label></div>' +
+      '<div id="lRes"><div class="sk"><i></i><i></i><i></i><i></i></div></div></section>';
+    qs('#lNew').onclick = function () { go('new'); };
+    qsa('#chips .chip').forEach(function (c) { c.onclick = function () { f.status = c.dataset.s; f.page = 1; qsa('#chips .chip').forEach(function (x) { x.classList.toggle('on', x === c); }); load(); }; });
+    var t;
+    qs('#fQ').oninput = function () { clearTimeout(t); t = setTimeout(function () { f.q = qs('#fQ').value; f.page = 1; load(); }, 300); };
+    ['fBr', 'fCat', 'fFrom', 'fTo'].forEach(function (id) {
+      var x = qs('#' + id); if (!x) return;
+      x.onchange = function () { f[{ fBr: 'branch', fCat: 'category', fFrom: 'from', fTo: 'to' }[id]] = x.value; f.page = 1; load(); };
+    });
+    function load(silent) {
+      var res = qs('#lRes'); if (!res) return; if (silent !== true) res.style.opacity = .5;
+      authed('listTickets', f).then(function (r) {
+        res.style.opacity = 1;
+        var pages = Math.max(1, Math.ceil(r.total / r.size));
+        res.innerHTML = ticketList(r.rows, 'ไม่พบรายการตามเงื่อนไข') +
+          '<div class="pager"><span class="muted">ทั้งหมด ' + r.total.toLocaleString() + ' รายการ · หน้า ' + r.page + '/' + pages + '</span><span class="row">' +
+          '<button class="btn sm" type="button" id="pPrev"' + (r.page <= 1 ? ' disabled' : '') + '>ก่อนหน้า</button><button class="btn sm" type="button" id="pNext"' + (r.page >= pages ? ' disabled' : '') + '>ถัดไป</button></span></div>';
+        bindTickets(res);
+        qs('#pPrev').onclick = function () { f.page--; load(); };
+        qs('#pNext').onclick = function () { f.page++; load(); };
+      }).catch(function (e) { res.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; });
+    }
+    el._refresh = function () { load(true); };
+    load();
+  }
+
+  // ---------- new ticket ----------
+  function viewNew(el) {
+    var b = state.boot, staff = isStaff(), u = b.user;
+    var draft = {}; try { draft = JSON.parse(store('mt_draft') || '{}') || {}; } catch (e) { draft = {}; }
+    var images = [], picked = null;
+    el.innerHTML = '<div class="head"><div><h1>แจ้งซ่อม</h1><div class="muted small">ส่งเรื่องถึงฝ่ายซ่อมบำรุงส่วนกลาง ติดตามสถานะได้ที่ "รายการซ่อม"</div></div></div>' +
+      '<form class="panel stack" id="nf" novalidate>' +
+      '<div class="grid3">' +
+      (staff ? '<label class="f"><span>สาขา <em>*</em></span><select class="i" id="nBr">' + opts(b.branches, draft.branch || '', 'เลือกสาขา') + '</select></label>'
+        : '<label class="f"><span>สาขา</span><input class="i" value="' + esc(branchName(u.branch)) + '" disabled></label>') +
+      '<label class="f"><span>แผนกที่ใช้งาน <em>*</em></span><select class="i" id="nDept">' + opts(b.departments, draft.department || '', 'เลือกแผนก') + '</select></label>' +
+      '<label class="f"><span>กลุ่มงานซ่อม</span><select class="i" id="nWg">' + opts(b.workGroups, draft.workGroup || b.workGroups[0]) + '</select></label>' +
+      '</div>' +
+      '<label class="f"><span>ประเภทอุปกรณ์ <em>*</em></span><select class="i" id="nCat">' + opts(b.categories.map(function (c) { return c.name; }), '', 'เลือกประเภท') + '</select></label>' +
+      '<div class="f sugg"><label class="f" for="nEq"><span>อุปกรณ์ที่แจ้งซ่อม <em>*</em> <span class="muted">พิมพ์ชื่อหรือรหัสเพื่อค้นหาจากทะเบียน ถ้าไม่พบระบบจะออกรหัสใหม่ให้</span></span></label>' +
+      '<input class="i" id="nEq" autocomplete="off" placeholder="เช่น แอร์ห้องผ่าตัด, infusion pump, MA-AIR-0012"><div class="sugg-list" id="nSug" hidden></div><div id="nPicked"></div></div>' +
+      '<label class="f"><span>อาการเสียที่แจ้งซ่อม <em>*</em></span><textarea class="i" id="nSym" placeholder="อธิบายอาการให้ช่างเข้าใจ เช่น เปิดไม่ติด มีเสียงดัง น้ำหยด"></textarea></label>' +
+      '<label class="f"><span>สาเหตุ (ถ้าทราบ)</span><input class="i" id="nCause" placeholder="ไม่ทราบ"></label>' +
+      '<div class="grid3"><label class="f"><span>ความเร่งด่วน <em>*</em></span><select class="i" id="nUrg">' + opts(b.urgencies, b.urgencies[1]) + '</select></label>' +
+      '<label class="f"><span>ชื่อผู้แจ้ง <em>*</em></span><input class="i" id="nRep" value="' + esc(draft.reporter || '') + '"></label>' +
+      '<label class="f"><span>เบอร์ติดต่อ</span><input class="i" id="nTel" inputmode="tel" value="' + esc(draft.contact || '') + '"></label></div>' +
+      '<div class="f"><span>รูปภาพสิ่งที่แจ้งซ่อม (สูงสุด 5 รูป)</span><div class="thumbs" id="nThumbs"></div>' +
+      '<label class="drop" for="nFile">' + ICON.cam + ' ถ่ายรูปหรือเลือกรูป</label><input id="nFile" type="file" accept="image/*" multiple hidden></div>' +
+      '<div class="err" id="nErr"></div><div class="row"><button class="btn pri" type="submit" id="nSend">ส่งแจ้งซ่อม</button><button class="btn ghost" type="reset" id="nReset">ล้างแบบฟอร์ม</button></div></form>';
+    var eqIn = qs('#nEq'), sug = qs('#nSug'), pk = qs('#nPicked');
+    function branch() { return staff ? qs('#nBr').value : u.branch; }
+    function showPicked() {
+      if (!picked) { pk.innerHTML = ''; eqIn.hidden = false; return; }
+      eqIn.hidden = true;
+      pk.innerHTML = '<div class="picked">' + (picked.code ? '<span class="code">' + esc(picked.code) + '</span>' : '<span class="pill st-submit">อุปกรณ์ใหม่</span>') + '<b>' + esc(picked.name) + '</b>' +
+        (picked.code ? '<span class="muted small">ซ่อมแล้ว ' + picked.repairCount + ' ครั้ง' + (picked.lastRepair ? ' · ล่าสุด ' + thDate(picked.lastRepair, false) : '') + '</span>' : '<span class="muted small">ระบบจะออกรหัสให้เมื่อส่งเรื่อง</span>') +
+        '<span class="spacer"></span><button class="btn sm" type="button" id="nChg">เปลี่ยน</button></div>';
+      qs('#nChg').onclick = function () { picked = null; showPicked(); eqIn.focus(); };
+    }
+    var st, hl = -1, list = [];
+    eqIn.oninput = function () {
+      clearTimeout(st);
+      var q = eqIn.value.trim();
+      if (staff && !branch()) { sug.hidden = false; sug.innerHTML = '<div class="empty small">เลือกสาขาก่อน</div>'; return; }
+      st = setTimeout(function () {
+        authed('searchEquipment', branch(), q, 12).then(function (rows) {
+          list = rows; hl = -1;
+          sug.innerHTML = rows.map(function (r, i) { return '<button type="button" data-i="' + i + '"><span class="code">' + esc(r.code) + '</span><span>' + esc(r.name) + '<br><span class="muted small">' + esc(r.category) + '</span></span><span class="muted small">' + r.repairCount + ' ครั้ง</span></button>'; }).join('') +
+            (q ? '<button type="button" data-new="1"><span class="pill st-submit">ใหม่</span><span>ใช้ "' + esc(q) + '" เป็นอุปกรณ์ใหม่</span><span></span></button>' : '');
+          sug.hidden = false;
+          qsa('button', sug).forEach(function (bt) { bt.onmousedown = function (e) { e.preventDefault(); choose(bt); }; });
+        }).catch(function () { });
+      }, 220);
+    };
+    function choose(bt) {
+      if (bt.dataset.new) picked = { code: '', name: eqIn.value.trim() };
+      else {
+        picked = list[+bt.dataset.i];
+        var cat = qs('#nCat'); if (!cat.value) cat.value = picked.category;
+        var dp = qs('#nDept'); if (!dp.value && picked.department) dp.value = picked.department;
+      }
+      sug.hidden = true; showPicked();
+    }
+    eqIn.onfocus = eqIn.oninput;
+    eqIn.onblur = function () { setTimeout(function () { sug.hidden = true; }, 150); };
+    eqIn.onkeydown = function (e) {
+      var bs = qsa('button', sug); if (!bs.length) return;
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); hl = (hl + (e.key === 'ArrowDown' ? 1 : -1) + bs.length) % bs.length; bs.forEach(function (x, i) { x.classList.toggle('hl', i === hl); }); }
+      if (e.key === 'Enter') { e.preventDefault(); choose(bs[hl >= 0 ? hl : 0]); }
+    };
+    if (staff) qs('#nBr').onchange = function () { picked = null; showPicked(); };
+
+    function drawThumbs() {
+      qs('#nThumbs').innerHTML = images.map(function (im, i) { return '<div class="slot' + (im.id ? '' : im.err ? ' fail' : ' up') + '"><img class="th" src="' + im.src + '" alt="รูปที่ ' + (i + 1) + '"><button type="button" class="x" data-x="' + i + '" aria-label="ลบรูป">×</button></div>'; }).join('');
+      qsa('[data-x]').forEach(function (x) { x.onclick = function () { images.splice(+x.dataset.x, 1); drawThumbs(); }; });
+    }
+    qs('#nFile').onchange = function (e) {
+      var files = Array.prototype.slice.call(e.target.files).slice(0, 5 - images.length);
+      Promise.all(files.map(shrink)).then(function (arr) {
+        arr.filter(Boolean).forEach(function (src) {
+          if (images.length >= 5) return;
+          // อัปโหลดทันทีระหว่างกรอกฟอร์ม ตอนกดส่งจะได้ไม่ต้องรอ
+          var im = { src: src };
+          im.p = authed('uploadImage', src).then(function (id) { im.id = id; drawThumbs(); return id; }, function () { im.err = true; drawThumbs(); return null; });
+          images.push(im);
+        });
+        drawThumbs();
+      });
+      e.target.value = '';
+    };
+    function saveDraft() { store('mt_draft', JSON.stringify({ branch: staff ? qs('#nBr').value : '', department: qs('#nDept').value, workGroup: qs('#nWg').value, reporter: qs('#nRep').value, contact: qs('#nTel').value })); }
+    qs('#nReset').onclick = function () { images = []; picked = null; setTimeout(function () { drawThumbs(); showPicked(); }, 0); };
+    qs('#nf').onsubmit = function (e) {
+      e.preventDefault();
+      var err = qs('#nErr'); err.textContent = '';
+      var d = {
+        branch: branch(), department: qs('#nDept').value, workGroup: qs('#nWg').value, category: qs('#nCat').value,
+        equipCode: picked ? picked.code : '', equipName: picked ? picked.name : eqIn.value.trim(), symptom: qs('#nSym').value,
+        cause: qs('#nCause').value, urgency: qs('#nUrg').value, reporter: qs('#nRep').value, contact: qs('#nTel').value, images: [], imageIds: []
+      };
+      var btn = qs('#nSend'), label = btn.textContent;
+      btn.textContent = images.some(function (im) { return !im.id && !im.err; }) ? 'กำลังอัปโหลดรูป…' : 'กำลังส่ง…';
+      var p = Promise.all(images.map(function (im) { return im.p; })).then(function (ids) {
+        btn.textContent = 'กำลังส่ง…';
+        ids.forEach(function (id, i) { if (id) d.imageIds.push(id); else d.images.push(images[i].src); });
+        return authed('createTicket', d);
+      });
+      busy(btn, p).then(function (r) {
+        btn.textContent = label; afterWrite();
+        saveDraft();
+        var m = modal('<h2>ส่งแจ้งซ่อมแล้ว</h2><div>เลขที่ใบแจ้งซ่อม <b class="mono" style="font-size:1.2rem">' + esc(r.ticketNo) + '</b></div><div class="muted">รหัสอุปกรณ์ <span class="code">' + esc(r.equipCode) + '</span> · สถานะ: รอส่วนกลางรับเรื่อง</div>' +
+          (!LIVE ? '<div class="demo-banner">หน้าตัวอย่าง: ใบนี้ไม่ได้ส่งเข้าระบบจริง เครื่องอื่นจะไม่เห็น</div>' : '') +
+          '<div class="row"><button class="btn pri" type="button" id="mV">ดูใบแจ้งซ่อม</button><button class="btn" type="button" id="mN">แจ้งรายการถัดไป</button></div>');
+        qs('#mV', m).onclick = function () { m.remove(); go('ticket', r.ticketNo); };
+        qs('#mN', m).onclick = function () { m.remove(); go('new'); };
+      }).catch(function (er) { btn.textContent = label; err.textContent = er.message; });
+    };
+  }
+  // ส่งแจ้งเตือน LINE/อีเมลที่เข้าคิวไว้ (ไม่ต้องรอผล)
+  function afterWrite() {
+    try { cacheSet('dash', null); cacheSet('dashlist2', null); } catch (e) { }
+    if (IS_GAS) google.script.run.withFailureHandler(function () { }).processNotify();
+    else if (REMOTE) remote('processNotify', []).catch(function () { });
+  }
+  function shrink(file) {
+    return new Promise(function (res) {
+      var fr = new FileReader();
+      fr.onload = function () {
+        var img = new Image();
+        img.onload = function () {
+          var max = 1280, w = img.width, hh = img.height, k = Math.min(1, max / Math.max(w, hh));
+          var c = document.createElement('canvas'); c.width = Math.round(w * k); c.height = Math.round(hh * k);
+          c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+          res(c.toDataURL('image/jpeg', .78));
+        };
+        img.onerror = function () { toast('เปิดไฟล์รูป ' + file.name + ' ไม่ได้', true); res(null); };
+        img.src = fr.result;
+      };
+      fr.readAsDataURL(file);
+    });
+  }
+
+  // ---------- ticket detail ----------
+  state.tk = {}; state.rows = {}; state.inflight = {};
+  function fetchTicket(no) {
+    if (state.inflight[no]) return state.inflight[no];
+    var p = authed('getTicket', no).then(function (d) { state.tk[no] = d; delete state.inflight[no]; return d; }, function (e) { delete state.inflight[no]; throw e; });
+    state.inflight[no] = p;
+    return p;
+  }
+  function prefetch(no) {
+    if (state.tk[no] || state.inflight[no] || Object.keys(state.inflight).length >= 4) return;
+    fetchTicket(no).catch(function () { });
+  }
+  function liteDetail(row) {
+    var t = {}; for (var k in row) t[k] = row[k];
+    ['contact', 'repairDetail', 'parts', 'cost', 'branchAction', 'resultNote', 'closedBy'].forEach(function (k) { if (t[k] == null) t[k] = ''; });
+    t.imageIds = [];
+    return { ticket: t, logs: [], evaluation: null, equipment: null, history: [], historyTotal: 0, _lite: true };
+  }
+  function viewTicket(el, no) {
+    state.curTicket = no;
+    var full = state.tk[no], row = state.rows[no];
+    if (full) drawTicket(el, full);
+    else if (row) drawTicket(el, liteDetail(row));
+    fetchTicket(no).then(function (d) {
+      if (state.view !== 'ticket' || state.curTicket !== no || !el.isConnected) return;
+      if (!full || JSON.stringify(full) !== JSON.stringify(d)) drawTicket(el, d);
+    }).catch(function (e) { if (!full) el.innerHTML = '<div class="panel err">' + esc(e.message) + '</div>'; });
+  }
+  function drawTicket(el, d) {
+    if (!d._lite) state.tk[d.ticket.ticketNo] = d;
+    var t = d.ticket, b = state.boot, S = b.status, staff = isStaff(), closed = [S.DONE, S.BRANCH, S.REPLACE, S.LEGACY, S.CANCEL].indexOf(t.status) >= 0;
+    var stg = t.stage;
+    var steps = trackHtml(t, d.evaluation);
+    var dl = [['เลขที่ใบแจ้งซ่อม', '<span class="mono">' + esc(t.ticketNo) + '</span>'], ['วันที่แจ้ง', thDate(t.createdAt) + ' <span class="muted small">(' + ago(t.createdAt) + ')</span>'],
+      ['สาขา / แผนก', esc(branchName(t.branch)) + ' · ' + esc(t.department)], ['กลุ่มงาน', esc(t.workGroup) + ' · ' + esc(t.category)],
+      ['อุปกรณ์', esc(t.equipName) + ' <button class="btn sm" type="button" id="tEq"><span class="mono">' + esc(t.equipCode) + '</span></button>'],
+      ['อาการเสีย', esc(t.symptom)], ['สาเหตุ', esc(t.cause || '-')], ['ความเร่งด่วน', urg(t.urgency)],
+      ['ผู้แจ้ง', esc(t.reporter) + (t.contact ? ' · โทร ' + esc(t.contact) : '')]];
+    var work = [['รับเรื่องโดย', t.receivedBy ? esc(t.receivedBy) + ' · ' + thDate(t.receivedAt) : '-'], ['ช่างผู้รับผิดชอบ', esc(t.technician || '-')],
+      ['บันทึกการซ่อม', esc(t.repairDetail || t.resultNote || '-')], ['อะไหล่', esc(t.parts || '-')], ['ค่าใช้จ่าย', money(t.cost)]];
+    if (closed) work.push(['ปิดงาน', t.closedAt ? thDate(t.closedAt) + (t.closedBy ? ' โดย ' + esc(t.closedBy) : '') : '-']);
+    if (t.branchAction) work.push(['แนวทางให้สาขา', '<b>' + esc(t.branchAction) + '</b>']);
+    function kv(rows) { return '<dl class="kv">' + rows.map(function (r) { return '<dt>' + r[0] + '</dt><dd>' + r[1] + '</dd>'; }).join('') + '</dl>'; }
+
+    el.innerHTML = '<div class="head"><div class="row"><button class="btn ghost sm" type="button" id="tBack">' + ICON.back + 'กลับ</button><h1 class="mono" style="font-family:var(--f-mono);font-size:1.3rem">' + esc(t.ticketNo) + '</h1>' + pill(t.status) + '</div>' +
+      '<div class="row"><button class="btn" type="button" id="tPrint">' + ICON.print + 'ใบแจ้งซ่อม / PDF</button></div></div>' +
+      '<section class="panel">' + steps + '</section>' +
+      '<div class="detail"><div class="stack">' +
+      '<section class="panel"><h2>รายละเอียดการแจ้งซ่อม</h2>' + kv(dl) +
+      (t.imageIds.length ? '<h3 style="margin:14px 0 8px">รูปภาพ</h3><div class="thumbs" id="tImgs">' + t.imageIds.map(function (id) { return '<img class="th" data-img="' + esc(id) + '" alt="รูปแจ้งซ่อม">'; }).join('') + '</div>' : '') + '</section>' +
+      '<section class="panel"><h2>การดำเนินการของซ่อมบำรุง</h2>' + kv(work) + '</section>' +
+      (d.evaluation ? '<section class="panel"><div class="ptitle"><h2>ผลประเมินจากสาขา</h2><span class="score">' + d.evaluation.avg + '<small class="muted" style="font-size:1rem">/5</small></span></div><div class="bars">' +
+        b.evalQuestions.map(function (q, i) { var v = +d.evaluation['q' + (i + 1)]; return '<div class="bar" style="grid-template-columns:minmax(0,1fr) 80px 24px"><span class="small">' + esc(q) + '</span><div class="t"><i style="width:' + v * 20 + '%;background:var(--amber)"></i></div><b>' + v + '</b></div>'; }).join('') +
+        '</div>' + (d.evaluation.comment ? '<p class="muted">"' + esc(d.evaluation.comment) + '"</p>' : '') + '</section>' : '') +
+      '</div><div class="stack" id="tSide">' +
+      '<section class="panel"><h2>ติดตามสถานะ</h2><div class="timeline">' + (d.logs.length ? d.logs.slice().reverse().map(function (l) {
+        return '<div class="tl"><span class="dot"></span><div><div class="when">' + thDate(l.at) + ' · ' + esc(l.userName) + '</div><div class="what">' + pill(l.status) + ' ' + esc(l.note) + '</div></div></div>';
+      }).join('') : '<div class="muted small">' + (t.source === 'ข้อมูลเดิม' ? 'รายการจากข้อมูลเดิม (Google Form) ไม่มีบันทึกขั้นตอน' : 'ยังไม่มีบันทึก') + '</div>') + '</div></section>' +
+      '<section class="panel"><div class="ptitle"><h2>ประวัติซ่อมอุปกรณ์นี้</h2><span class="muted small">' + d.historyTotal + ' ครั้งก่อนหน้า</span></div><div class="hist">' +
+      (d.history.length ? d.history.map(function (x) { return '<div class="h" data-t="' + esc(x.ticketNo) + '"><div class="row"><span class="mono small">' + esc(x.ticketNo) + '</span><span class="muted small">' + thDate(x.createdAt, false) + '</span></div><div>' + esc(x.symptom) + '</div>' + (x.repairDetail ? '<div class="muted small">' + esc(String(x.repairDetail).slice(0, 120)) + '</div>' : '') + '</div>'; }).join('') : '<div class="muted small">ไม่มีประวัติก่อนหน้า</div>') +
+      '</div></section></div></div>';
+
+    qs('#tBack').onclick = goBack;
+    qs('#tEq').onclick = function () { showEquip(t.equipCode); };
+    qs('#tPrint').onclick = function () { printTicket(d); };
+    qsa('.hist [data-t]', el).forEach(function (x) { x.onclick = function () { go('ticket', x.dataset.t); }; });
+    qsa('[data-img]', el).forEach(function (im) {
+      authed('getImage', im.dataset.img).then(function (src) { im.src = src; im.onclick = function () { modal('<img class="full" src="' + src + '" alt="รูปแจ้งซ่อม"><div class="row"><span class="spacer"></span><button class="btn" type="button" data-close>ปิด</button></div>', true); }; }).catch(function () { im.alt = 'โหลดรูปไม่ได้'; });
+    });
+
+    // ---- action panel ----
+    var side = qs('#tSide'), box = null;
+    if (d._lite) { side.prepend(h('<section class="panel sk"><i></i><i></i><i></i></section>')); return; }
+    if (staff && t.status === S.SUBMIT) {
+      box = h('<section class="actbox"><h3>รับเรื่องแจ้งซ่อม</h3><label class="f"><span>มอบหมายช่าง</span><select class="i" id="aTech">' + opts(b.technicians, b.user.name) + '</select></label>' +
+        '<label class="f"><span>หมายเหตุถึงสาขา</span><input class="i" id="aNote" placeholder="เช่น ช่างจะเข้าตรวจพรุ่งนี้เช้า"></label>' +
+        '<div class="row"><button class="btn pri" type="button" id="aRecv">รับเรื่อง</button><button class="btn dng" type="button" id="aCancel">ยกเลิกใบนี้</button></div><div id="aConf"></div></section>');
+      side.prepend(box);
+      qs('#aRecv').onclick = function (e) { busy(e.currentTarget, authed('receiveTicket', t.ticketNo, qs('#aTech').value, qs('#aNote').value)).then(function (r) { afterWrite(); toast('รับเรื่องแล้ว'); drawTicket(el, r); }); };
+      bindCancel();
+    } else if (staff && !closed) {
+      box = h('<section class="actbox"><div class="tabs" role="tablist"><button type="button" class="on" data-tab="log">บันทึกการซ่อม</button><button type="button" data-tab="close">ปิดงาน</button></div>' +
+        '<form class="stack" data-pane="log"><label class="f"><span>สถานะ</span><select class="i" id="rSt">' + opts(b.workStatuses, t.status === S.RECEIVED ? S.REPAIR : t.status) + '</select></label>' +
+        '<label class="f"><span>รายละเอียดการดำเนินการ <em>*</em></span><textarea class="i" id="rNote" placeholder="ตรวจพบ… ดำเนินการ…"></textarea></label>' +
+        '<div class="grid2"><label class="f"><span>อะไหล่ที่ใช้/สั่ง</span><input class="i" id="rParts"></label><label class="f"><span>ค่าใช้จ่าย (บาท)</span><input class="i" id="rCost" inputmode="decimal"></label></div>' +
+        '<label class="f"><span>ช่างผู้รับผิดชอบ</span><select class="i" id="rTech">' + opts(b.technicians, t.technician) + '</select></label>' +
+        '<button class="btn pri" type="submit">บันทึก</button></form>' +
+        '<form class="stack" data-pane="close" hidden><div class="radios">' + b.closeTypes.map(function (c, i) { return '<label><input type="radio" name="ct" value="' + esc(c) + '"' + (i === 0 ? ' checked' : '') + '>' + esc(c) + '</label>'; }).join('') + '</div>' +
+        '<label class="f"><span>สรุปผลการซ่อม <em>*</em></span><textarea class="i" id="cSum"></textarea></label>' +
+        '<label class="f" id="cActW" hidden><span>แนวทางให้สาขาดำเนินการต่อ <em>*</em></span><textarea class="i" id="cAct" placeholder="เช่น ให้สาขาจัดซื้อเครื่องใหม่ / ให้ติดต่อศูนย์บริการ / ให้สังเกตอาการ"></textarea></label>' +
+        '<div class="grid2"><label class="f"><span>อะไหล่</span><input class="i" id="cParts"></label><label class="f"><span>ค่าใช้จ่ายเพิ่ม (บาท)</span><input class="i" id="cCost" inputmode="decimal"></label></div>' +
+        '<button class="btn pri" type="submit">ปิดงาน</button></form></section>');
+      side.prepend(box);
+      qsa('[data-tab]', box).forEach(function (tb) { tb.onclick = function () { qsa('[data-tab]', box).forEach(function (x) { x.classList.toggle('on', x === tb); }); qsa('[data-pane]', box).forEach(function (p) { p.hidden = p.dataset.pane !== tb.dataset.tab; }); }; });
+      qsa('[name=ct]', box).forEach(function (r) { r.onchange = function () { qs('#cActW').hidden = r.value === S.DONE && r.checked; }; });
+      qs('[data-pane=log]', box).onsubmit = function (e) {
+        e.preventDefault();
+        busy(e.submitter || e.target.querySelector("[type=submit]"), authed('addRepairLog', t.ticketNo, { status: qs('#rSt').value, note: qs('#rNote').value, parts: qs('#rParts').value, cost: qs('#rCost').value, technician: qs('#rTech').value }))
+          .then(function (r) { afterWrite(); toast('บันทึกแล้ว'); drawTicket(el, r); });
+      };
+      qs('[data-pane=close]', box).onsubmit = function (e) {
+        e.preventDefault();
+        busy(e.submitter || e.target.querySelector("[type=submit]"), authed('closeTicket', t.ticketNo, { closeType: qs('[name=ct]:checked', box).value, summary: qs('#cSum').value, branchAction: qs('#cAct').value, parts: qs('#cParts').value, cost: qs('#cCost').value }))
+          .then(function (r) { afterWrite(); toast('ปิดงานแล้ว สาขาจะเห็นแบบประเมิน'); drawTicket(el, r); });
+      };
+    } else if (!staff && t.status === S.SUBMIT) {
+      box = h('<section class="actbox"><h3>รอส่วนกลางรับเรื่อง</h3><div class="muted small">ยกเลิกได้จนกว่าส่วนกลางจะรับเรื่อง</div><div><button class="btn dng" type="button" id="aCancel">ยกเลิกการแจ้งซ่อม</button></div><div id="aConf"></div></section>');
+      side.prepend(box); bindCancel();
+    }
+    if (closed && t.status !== S.CANCEL && t.status !== S.LEGACY && t.source !== 'ข้อมูลเดิม' && !d.evaluation && (!staff || b.user.role === 'admin')) {
+      var sc = {};
+      var ev = h('<section class="actbox"><h3>แบบประเมินหลังซ่อม</h3><div class="muted small">ให้คะแนน 1 (ควรปรับปรุง) ถึง 5 (ดีมาก)</div><div class="stars">' +
+        b.evalQuestions.map(function (q, i) { return '<div class="star-q"><span>' + (i + 1) + '. ' + esc(q) + '</span><div class="star-r" data-q="' + (i + 1) + '">' + [1, 2, 3, 4, 5].map(function (n) { return '<button type="button" data-n="' + n + '" aria-label="' + n + ' คะแนน">' + n + '</button>'; }).join('') + '</div></div>'; }).join('') +
+        '</div><label class="f"><span>ข้อเสนอแนะ</span><textarea class="i" id="eCom"></textarea></label><div class="err" id="eErr"></div><button class="btn pri" type="button" id="eSend">ส่งแบบประเมิน</button></section>');
+      side.prepend(ev);
+      qsa('.star-r', ev).forEach(function (r) { qsa('button', r).forEach(function (bt) { bt.onclick = function () { sc['q' + r.dataset.q] = +bt.dataset.n; qsa('button', r).forEach(function (x) { x.classList.toggle('on', +x.dataset.n <= +bt.dataset.n); }); }; }); });
+      qs('#eSend').onclick = function (e) {
+        sc.comment = qs('#eCom').value;
+        busy(e.currentTarget, authed('submitEvaluation', t.ticketNo, sc)).then(function (r) { afterWrite(); toast('ขอบคุณสำหรับการประเมิน'); drawTicket(el, r); }).catch(function (er) { qs('#eErr').textContent = er.message; });
+      };
+    }
+    function bindCancel() {
+      qs('#aCancel').onclick = function () {
+        var c = qs('#aConf');
+        c.innerHTML = '<div class="confirm">ยืนยันยกเลิกใบแจ้งซ่อมนี้?<input class="i" id="cRe" placeholder="เหตุผล" style="flex:1;min-width:120px"><button class="btn sm dng" type="button" id="cYes">ยืนยัน</button><button class="btn sm ghost" type="button" id="cNo">ไม่</button></div>';
+        qs('#cNo').onclick = function () { c.innerHTML = ''; };
+        qs('#cYes').onclick = function (e) { busy(e.currentTarget, authed('cancelTicket', t.ticketNo, qs('#cRe').value)).then(function (r) { afterWrite(); toast('ยกเลิกแล้ว'); drawTicket(el, r); }); };
+      };
+    }
+  }
+
+  // ---------- status track ----------
+  var TK_ICON = [
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8l3 3v13H5V4z"/><path d="M9 4v3h6V4"/><path d="M9 12h6M9 16h4"/></svg>',
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13l2.5-7h13L21 13v6H3z"/><path d="M3 13h5l1.5 2h5L16 13h5"/><path d="M9.5 8.5l1.8 1.8 3.4-3.4"/></svg>',
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3.5 17.5a1.8 1.8 0 0 0 2.5 2.5l5.8-5.8a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.2-.3-.3-2.2z"/></svg>',
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>',
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.8l-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/></svg>'
+  ];
+  function trackHtml(t, ev) {
+    var S = state.boot.status, stg = t.stage, cancelled = stg < 0;
+    var legacy = t.source === 'ข้อมูลเดิม';
+    var ds = [
+      thDate(t.createdAt) + '<br>' + esc(t.reporter || ''),
+      t.receivedAt ? thDate(t.receivedAt) + '<br>' + esc(t.receivedBy || '') : (legacy && stg >= 3 ? 'ข้อมูลเดิม' : 'รอส่วนกลางรับเรื่อง'),
+      stg === 2 ? esc(t.status) + (t.technician ? '<br>ช่าง ' + esc(t.technician) : '') : stg > 2 ? (t.technician ? 'ช่าง ' + esc(t.technician) : 'ดำเนินการแล้ว') : (t.technician ? 'มอบหมาย ' + esc(t.technician) : 'รอเริ่มซ่อม'),
+      stg >= 3 ? esc(t.closeType || t.status) + (t.closedAt ? '<br>' + thDate(t.closedAt) : '') : 'ยังไม่ปิดงาน',
+      stg >= 4 ? 'คะแนน ' + esc(t.evalScore) + '/5' : stg === 3 && !legacy ? 'รอสาขาประเมิน' : legacy && stg === 3 ? 'ไม่มีแบบประเมิน (ข้อมูลเดิม)' : 'หลังปิดงาน'
+    ];
+    // ขั้นตอนที่กำลังรอ/กำลังทำ: แจ้งแล้ว -> รอรับเรื่อง, รับแล้ว -> รอซ่อม, กำลังซ่อม -> ซ่อม, ปิดแล้ว -> รอประเมิน
+    var cur = cancelled ? -1 : stg === 2 ? 2 : (stg === 3 && legacy) ? -1 : stg + 1 <= 4 ? stg + 1 : -1;
+    var h = '<div class="track" role="list" aria-label="สถานะงานซ่อม">' + state.boot.steps.map(function (name, i) {
+      var reached = !cancelled && (i <= stg || (i === 4 && stg >= 4));
+      var isCur = !cancelled && i === cur;
+      var cls = 'tk s' + (i + 1) + (reached ? '' : ' off') + (isCur ? ' cur' : '');
+      if (isCur && !reached) cls = 'tk s' + (i + 1) + ' cur off';
+      return '<div class="' + cls + '" role="listitem"><span class="seg"></span><span class="med">' + TK_ICON[i] + '</span><span class="dots"></span><span class="nb">' + pad2(i + 1) + '</span>' +
+        '<div class="tt">' + esc(name) + '</div><div class="ds">' + ds[i] + '</div>' + (isCur ? '<span class="now">' + (reached ? 'กำลังดำเนินการ' : 'รอดำเนินการ') + '</span>' : '') + '</div>';
+    }).join('') + '</div>';
+    if (cancelled) h += '<div class="track-note">ยกเลิกการแจ้งซ่อมแล้ว' + (t.closedAt ? ' เมื่อ ' + thDate(t.closedAt) : '') + (t.closedBy ? ' โดย ' + esc(t.closedBy) : '') + '</div>';
+    return h;
+  }
+  function pad2(n) { return n < 10 ? '0' + n : String(n); }
+
+  // ---------- print / PDF ----------
+  function paperHtml(d, imgs) {
+    var t = d.ticket, org = state.boot.orgName;
+    function row(a, b) { return '<tr><th>' + a + '</th><td>' + b + '</td></tr>'; }
+    var css = '.paper{font-family:"Sarabun","IBM Plex Sans Thai","Leelawadee UI",sans-serif;color:#111;background:#fff;width:100%;max-width:190mm;margin:0 auto;font-size:13px;line-height:1.45}' +
+      '.paper h1{font-size:20px;margin:0}.paper .top{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #111;padding-bottom:8px;margin-bottom:10px;gap:10px}' +
+      '.paper .no{border:1.5px solid #111;padding:6px 10px;text-align:right;font-size:12px}.paper .no b{font-size:17px;font-family:monospace;display:block}' +
+      '.paper table{width:100%;border-collapse:collapse;margin-bottom:10px}.paper th,.paper td{border:1px solid #888;padding:5px 8px;text-align:left;vertical-align:top;font-size:12.5px}' +
+      '.paper th{width:30%;background:#f1f1f1;font-weight:600}.paper .sec{font-weight:700;margin:12px 0 4px;font-size:14px}' +
+      '.paper .imgs{display:flex;gap:8px;margin-bottom:10px}.paper .imgs img{width:48%;max-height:60mm;object-fit:contain;border:1px solid #ccc}' +
+      '.paper .sign{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:22px;text-align:center;font-size:12px}.paper .sign div{border-top:1px dotted #333;padding-top:4px;margin-top:34px}' +
+      '.paper .box{border:1px solid #888;min-height:22mm;padding:6px 8px;white-space:pre-line;font-size:12.5px}.paper .ft{margin-top:14px;font-size:10.5px;color:#555;display:flex;justify-content:space-between}';
+    var body = '<div class="paper"><div class="top"><div><h1>ใบแจ้งซ่อม</h1><div>' + esc(org) + '</div><div>' + esc(branchName(t.branch)) + ' · แผนก' + esc(t.department) + '</div></div>' +
+      '<div class="no">เลขที่<b>' + esc(t.ticketNo) + '</b>วันที่แจ้ง ' + thDate(t.createdAt) + '</div></div>' +
+      '<table>' + row('รหัสอุปกรณ์', '<b style="font-family:monospace">' + esc(t.equipCode) + '</b>') + row('รายการที่แจ้งซ่อม', esc(t.equipName)) + row('ประเภท / กลุ่มงาน', esc(t.category) + ' / ' + esc(t.workGroup)) +
+      row('อาการเสีย', esc(t.symptom)) + row('สาเหตุ (ตามที่สาขาแจ้ง)', esc(t.cause || '-')) + row('ความเร่งด่วน', esc(t.urgency)) +
+      row('ผู้แจ้งซ่อม', esc(t.reporter) + (t.contact ? ' โทร ' + esc(t.contact) : '')) + row('สถานะปัจจุบัน', esc(t.status)) + '</table>' +
+      (imgs.length ? '<div class="imgs">' + imgs.map(function (s) { return '<img src="' + s + '" alt="">'; }).join('') + '</div>' : '') +
+      '<div class="sec">ส่วนของฝ่ายซ่อมบำรุง</div><table>' + row('รับเรื่องโดย', t.receivedBy ? esc(t.receivedBy) + ' · ' + thDate(t.receivedAt) : '') + row('ช่างผู้รับผิดชอบ', esc(t.technician || '')) +
+      row('อะไหล่', esc(t.parts || '')) + row('ค่าใช้จ่าย', t.cost ? money(t.cost) : '') + row('ผลการซ่อม', t.closeType ? esc(t.closeType) + ' · ' + thDate(t.closedAt) : '☐ ซ่อมเสร็จ &nbsp; ☐ ส่งกลับสาขาดำเนินการต่อ &nbsp; ☐ ซ่อมไม่ได้/แนะนำซื้อใหม่') + '</table>' +
+      '<div class="sec">บันทึกการซ่อม</div><div class="box">' + esc(t.repairDetail || '') + '</div>' +
+      (t.branchAction ? '<div class="sec">แนวทางให้สาขาดำเนินการต่อ</div><div class="box" style="min-height:0">' + esc(t.branchAction) + '</div>' : '') +
+      '<div class="sign"><div>ผู้แจ้งซ่อม<br>(' + esc(t.reporter) + ')</div><div>ผู้รับเรื่อง<br>(' + esc(t.receivedBy || '................') + ')</div><div>ช่างผู้ซ่อม<br>(' + esc(t.technician || '................') + ')</div><div>ผู้ตรวจรับงาน (สาขา)<br>(................)</div></div>' +
+      '<div class="ft"><span>พิมพ์จากระบบแจ้งซ่อม ' + thDate(new Date(Date.now() + 7 * 3600e3).toISOString().slice(0, 16).replace('T', ' ')) + '</span><span>' + esc(t.ticketNo) + '</span></div></div>';
+    return { css: css, body: body };
+  }
+  function printTicket(d) {
+    var ids = d.ticket.imageIds.slice(0, 2);
+    Promise.all(ids.map(function (id) { return authed('getImage', id).catch(function () { return ''; }); })).then(function (imgs) {
+      imgs = imgs.filter(Boolean);
+      var p = paperHtml(d, imgs);
+      var full = '<!doctype html><html lang="th"><head><meta charset="utf-8"><title>ใบแจ้งซ่อม ' + esc(d.ticket.ticketNo) + '</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap"><style>@page{size:A4;margin:12mm}body{margin:0;background:#fff}' + p.css + '</style></head><body>' + p.body + '</body></html>';
+      var m = modal('<div class="ptitle"><h2>ใบแจ้งซ่อม ' + esc(d.ticket.ticketNo) + '</h2><div class="row">' +
+        (LIVE ? '<button class="btn pri" type="button" id="pPrint">' + ICON.print + 'พิมพ์</button><button class="btn" type="button" id="pPdf">บันทึก PDF ลง Drive</button>' : '') +
+        '<button class="btn ghost" type="button" data-close>ปิด</button></div></div>' +
+        (!LIVE ? '<div class="demo-banner">ตัวอย่างหน้าพิมพ์ ในระบบจริงมีปุ่มพิมพ์ (เลือก "บันทึกเป็น PDF" ได้) และปุ่มบันทึกไฟล์ PDF ลง Google Drive</div>' : '') +
+        '<div id="pLink"></div><div class="paper-wrap"><style>' + p.css + '</style>' + p.body + '</div>', true);
+      if (LIVE) {
+        qs('#pPrint', m).onclick = function () {
+          var w = window.open('', '_blank');
+          if (!w) { toast('เบราว์เซอร์บล็อกหน้าต่างใหม่ กรุณาอนุญาต pop-up', true); return; }
+          w.document.write(full + '<script>window.onload=function(){setTimeout(function(){window.print()},400)}<\/script>'); w.document.close();
+        };
+        qs('#pPdf', m).onclick = function (e) {
+          var btn = e.currentTarget; btn.disabled = true;
+          var ok = function (r) { btn.disabled = false; qs('#pLink', m).innerHTML = '<div class="picked">บันทึกแล้ว: <a href="' + esc(r.url) + '" target="_blank" rel="noopener">' + esc(r.name) + '</a></div>'; };
+          var bad = function (er) { btn.disabled = false; toast(er.message, true); };
+          if (IS_GAS) google.script.run.withSuccessHandler(ok).withFailureHandler(bad).ticketPdf(state.token, d.ticket.ticketNo, full);
+          else remote('ticketPdf', [state.token, d.ticket.ticketNo, full]).then(ok, bad);
+        };
+      }
+    });
+  }
+
+  // ---------- equipment ----------
+  function viewEquip(el) {
+    var f = state.eqFilters, staff = isStaff(), canEdit = ['admin', 'central'].indexOf(state.boot.user.role) >= 0;
+    el.innerHTML = '<div class="head"><div><h1>ทะเบียนอุปกรณ์</h1><div class="muted small">รวบรวมจากประวัติแจ้งซ่อมทั้งหมด รหัส = สาขา-ประเภท-ลำดับ</div></div>' + (canEdit ? '<button class="btn" type="button" id="eAdd">' + ICON.add + 'เพิ่มอุปกรณ์</button>' : '') + '</div>' +
+      '<section class="panel stack"><div class="filters">' + (staff ? '<select class="i" id="eBr" style="width:auto">' + opts(state.boot.branches, f.branch || '', 'ทุกสาขา') + '</select>' : '') +
+      '<select class="i" id="eCat" style="width:auto">' + opts(state.boot.categories.map(function (c) { return c.name; }), f.category || '', 'ทุกประเภท') + '</select>' +
+      '<select class="i" id="eSort" style="width:auto">' + opts([{ code: 'count', name: 'ซ่อมบ่อยสุด' }, { code: 'recent', name: 'ซ่อมล่าสุด' }, { code: 'code', name: 'เรียงตามรหัส' }], f.sort) + '</select>' +
+      '<input class="i" id="eQ" placeholder="ค้นหารหัส ชื่อ ชื่อเรียกอื่น…" value="' + esc(f.q || '') + '" style="flex:1;min-width:180px"></div><div id="eRes"></div></section>';
+    if (qs('#eAdd')) qs('#eAdd').onclick = function () { editEquip(null, function () { go('equip'); }); };
+    var tm;
+    qs('#eQ').oninput = function () { clearTimeout(tm); tm = setTimeout(function () { f.q = qs('#eQ').value; f.page = 1; load(); }, 300); };
+    ['eBr', 'eCat', 'eSort'].forEach(function (id) { var x = qs('#' + id); if (x) x.onchange = function () { f[{ eBr: 'branch', eCat: 'category', eSort: 'sort' }[id]] = x.value; f.page = 1; load(); }; });
+    function load(silent) {
+      var res = qs('#eRes'); if (!res) return; if (silent !== true) res.style.opacity = .5;
+      authed('listEquipment', f).then(function (r) {
+        res.style.opacity = 1;
+        var pages = Math.max(1, Math.ceil(r.total / r.size));
+        res.innerHTML = (r.rows.length ? '<div class="tscroll"><table class="t"><thead><tr><th>รหัส</th><th>ชื่ออุปกรณ์</th><th class="hm">ประเภท</th><th class="hm">แผนก</th><th class="num">ซ่อม</th><th>ซ่อมล่าสุด</th><th class="hm">สถานะ</th></tr></thead><tbody>' +
+          r.rows.map(function (e) { return '<tr class="click" data-eq="' + esc(e.code) + '"><td><span class="code">' + esc(e.code) + '</span></td><td>' + esc(e.name) + '<div class="sm-only muted small">' + esc(e.category) + ' · ' + esc(e.department) + '</div></td><td class="small hm">' + esc(e.category) + '</td><td class="small hm">' + esc(e.department) + '</td><td class="num"><b>' + esc(e.repairCount) + '</b></td><td class="small">' + thDate(e.lastRepair, false) + '</td><td class="small hm">' + esc(e.status) + '</td></tr>'; }).join('') +
+          '</tbody></table></div>' : '<div class="empty">ไม่พบอุปกรณ์</div>') +
+          '<div class="pager"><span class="muted">ทั้งหมด ' + r.total.toLocaleString() + ' รายการ · หน้า ' + r.page + '/' + pages + '</span><span class="row"><button class="btn sm" type="button" id="qPrev"' + (r.page <= 1 ? ' disabled' : '') + '>ก่อนหน้า</button><button class="btn sm" type="button" id="qNext"' + (r.page >= pages ? ' disabled' : '') + '>ถัดไป</button></span></div>';
+        qsa('[data-eq]', res).forEach(function (x) { x.onclick = function () { showEquip(x.dataset.eq, load); }; });
+        qs('#qPrev').onclick = function () { f.page--; load(); }; qs('#qNext').onclick = function () { f.page++; load(); };
+      }).catch(function (e) { res.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; });
+    }
+    el._refresh = function () { load(true); };
+    load();
+  }
+  function showEquip(code, after) {
+    authed('getEquipment', code).then(function (r) {
+      var e = r.equipment, canEdit = ['admin', 'central'].indexOf(state.boot.user.role) >= 0;
+      var m = modal('<div class="ptitle"><div><span class="code" style="font-size:.95rem">' + esc(e.code) + '</span><h2 style="margin-top:6px">' + esc(e.name) + '</h2><div class="muted small">' + esc(branchName(e.branch)) + ' · ' + esc(e.category) + ' · ' + esc(e.department) + ' · ' + esc(e.status) + '</div></div>' +
+        '<div class="row">' + (canEdit ? '<button class="btn sm" type="button" id="qEdit">แก้ไข</button><button class="btn sm" type="button" id="qMerge">รวมรหัส</button>' : '') + '<button class="btn sm ghost" type="button" data-close>ปิด</button></div></div>' +
+        '<div class="kpis" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div class="kpi"><span class="l">ซ่อมทั้งหมด</span><span class="v">' + r.tickets.length + '</span></div><div class="kpi"><span class="l">ค่าซ่อมรวม (ที่บันทึก)</span><span class="v" style="font-size:1.2rem">' + money(r.totalCost) + '</span></div><div class="kpi"><span class="l">ซ่อมครั้งแรก</span><span class="v" style="font-size:1.2rem">' + thDate(e.firstRepair, false) + '</span></div></div>' +
+        (e.aliases ? '<div class="small muted">ชื่อเรียกในใบแจ้งซ่อม: ' + esc(e.aliases) + '</div>' : '') + (e.legacyCode ? '<div class="small">รหัสเดิมที่สาขาใช้: <span class="code">' + esc(e.legacyCode) + '</span></div>' : '') +
+        (e.note ? '<div class="small">หมายเหตุ: ' + esc(e.note) + '</div>' : '') + '<div id="qMx"></div>' +
+        '<h3>ประวัติการซ่อม</h3><div class="tscroll"><table class="t"><thead><tr><th>วันที่</th><th>เลขที่</th><th>อาการ</th><th>ผล/บันทึกช่าง</th><th>สถานะ</th></tr></thead><tbody>' +
+        r.tickets.map(function (t) { return '<tr class="click" data-t="' + esc(t.ticketNo) + '"><td class="small" style="white-space:nowrap">' + thDate(t.createdAt, false) + '</td><td class="mono small">' + esc(t.ticketNo) + '</td><td>' + esc(t.symptom) + (t.cause && !/ไม่ทราบ/.test(t.cause) ? '<div class="muted small">สาเหตุ: ' + esc(t.cause) + '</div>' : '') + '</td><td class="small">' + esc(String(t.repairDetail || '').slice(0, 140)) + '</td><td>' + pill(t.status) + '</td></tr>'; }).join('') +
+        '</tbody></table></div>', true);
+      qsa('[data-t]', m).forEach(function (x) { x.onclick = function () { m.remove(); go('ticket', x.dataset.t); }; });
+      if (canEdit) {
+        qs('#qEdit', m).onclick = function () { m.remove(); editEquip(e, function () { showEquip(e.code, after); if (after) after(); }); };
+        qs('#qMerge', m).onclick = function () {
+          var mx = qs('#qMx', m);
+          mx.innerHTML = '<div class="picked" style="background:var(--amber-soft)"><span>ย้ายประวัติทั้งหมดของรหัสนี้ไปรวมกับรหัส</span><input class="i" id="qTo" placeholder="' + esc(e.branch) + '-XXX-0000" style="width:180px"><button class="btn sm pri" type="button" id="qGo">รวม</button></div>';
+          qs('#qGo', m).onclick = function (ev) {
+            var to = qs('#qTo', m).value.trim().toUpperCase();
+            busy(ev.currentTarget, authed('mergeEquipment', e.code, to)).then(function (x) { m.remove(); toast('ย้าย ' + x.moved + ' รายการไปที่ ' + to + ' แล้ว'); showEquip(to, after); if (after) after(); });
+          };
+        };
+      }
+    }).catch(function (er) { toast(er.message, true); });
+  }
+  function editEquip(e, done) {
+    var b = state.boot, isNew = !e; e = e || {};
+    var m = modal('<h2>' + (isNew ? 'เพิ่มอุปกรณ์' : 'แก้ไข ' + esc(e.code)) + '</h2><form class="stack" id="qf"><div class="grid2">' +
+      '<label class="f"><span>สาขา</span><select class="i" id="qBr"' + (isNew ? '' : ' disabled') + '>' + opts(b.branches, e.branch || '', 'เลือกสาขา') + '</select></label>' +
+      '<label class="f"><span>ประเภท</span><select class="i" id="qCat">' + opts(b.categories.map(function (c) { return c.name; }), e.category || '', 'เลือกประเภท') + '</select></label>' +
+      '<label class="f span2"><span>ชื่ออุปกรณ์</span><input class="i" id="qName" value="' + esc(e.name || '') + '"></label>' +
+      '<label class="f"><span>แผนก</span><select class="i" id="qDept">' + opts(b.departments, e.department || '', '-') + '</select></label>' +
+      '<label class="f"><span>สถานะ</span><select class="i" id="qSt">' + opts(['ใช้งาน', 'ซ่อมไม่ได้/รอจัดซื้อใหม่', 'จำหน่ายแล้ว', 'ไม่ใช้งาน'], e.status || 'ใช้งาน') + '</select></label>' +
+      '<label class="f"><span>รหัสเดิม/เลขครุภัณฑ์</span><input class="i" id="qLeg" value="' + esc(e.legacyCode || '') + '"></label>' +
+      '<label class="f"><span>หมายเหตุ</span><input class="i" id="qNote" value="' + esc(e.note || '') + '"></label></div>' +
+      (isNew ? '<div class="muted small">รหัสจะออกให้อัตโนมัติตามสาขาและประเภท</div>' : '<div class="muted small">เปลี่ยนประเภทแล้วรหัสเดิมจะคงไว้</div>') +
+      '<div class="row"><button class="btn pri" type="submit">บันทึก</button><button class="btn ghost" type="button" data-close>ยกเลิก</button></div></form>');
+    qs('#qf', m).onsubmit = function (ev) {
+      ev.preventDefault();
+      busy(ev.submitter || ev.target.querySelector("[type=submit]"), authed('saveEquipment', { code: e.code || '', branch: qs('#qBr', m).value, category: qs('#qCat', m).value, name: qs('#qName', m).value, department: qs('#qDept', m).value, status: qs('#qSt', m).value, legacyCode: qs('#qLeg', m).value, note: qs('#qNote', m).value }))
+        .then(function (r) { m.remove(); toast('บันทึก ' + r.code + ' แล้ว'); done && done(r); });
+    };
+  }
+
+  // ---------- users ----------
+  function viewUsers(el) {
+    authed('listUsers').then(function (rows) {
+      var b = state.boot;
+      el.innerHTML = '<div class="head"><h1>ผู้ใช้งาน</h1><button class="btn pri" type="button" id="uAdd">' + ICON.add + 'เพิ่มผู้ใช้</button></div>' +
+        '<section class="panel"><div class="tscroll"><table class="t"><thead><tr><th>ชื่อผู้ใช้</th><th>ชื่อ</th><th>บทบาท</th><th>สาขา</th><th>สถานะ</th><th></th></tr></thead><tbody>' +
+        rows.map(function (u, i) { return '<tr><td class="mono">' + esc(u.username) + '</td><td>' + esc(u.name) + '</td><td>' + esc(b.roles[u.role] || u.role) + '</td><td>' + esc(u.branch || '-') + '</td><td>' + (u.active ? '<span class="pill st-done">ใช้งาน</span>' : '<span class="pill">ปิด</span>') + '</td><td><button class="btn sm" type="button" data-u="' + i + '">แก้ไข</button></td></tr>'; }).join('') +
+        '</tbody></table></div></section><div class="muted small">สาขาเห็นและแจ้งซ่อมได้เฉพาะสาขาตัวเอง · ช่างรับเรื่อง บันทึก และปิดงาน · ส่วนกลางทำได้เหมือนช่างและแก้ทะเบียนอุปกรณ์ · ผู้ดูแลระบบจัดการผู้ใช้</div>';
+      qs('#uAdd').onclick = function () { editUser(null); };
+      qsa('[data-u]', el).forEach(function (x) { x.onclick = function () { editUser(rows[+x.dataset.u]); }; });
+    }).catch(function (e) { el.innerHTML = '<div class="panel err">' + esc(e.message) + '</div>'; });
+  }
+  function editUser(u) {
+    var b = state.boot, isNew = !u; u = u || { active: true, role: 'branch' };
+    var m = modal('<h2>' + (isNew ? 'เพิ่มผู้ใช้' : 'แก้ไข ' + esc(u.username)) + '</h2><form class="stack" id="uf"><div class="grid2">' +
+      '<label class="f"><span>ชื่อผู้ใช้</span><input class="i" id="uU" value="' + esc(u.username || '') + '"' + (isNew ? '' : ' disabled') + ' autocomplete="off"></label>' +
+      '<label class="f"><span>ชื่อที่แสดง</span><input class="i" id="uN" value="' + esc(u.name || '') + '"></label>' +
+      '<label class="f"><span>บทบาท</span><select class="i" id="uR">' + opts(Object.keys(b.roles).map(function (k) { return { code: k, name: b.roles[k] }; }), u.role) + '</select></label>' +
+      '<label class="f"><span>สาขา (สำหรับบทบาทสาขา)</span><select class="i" id="uB">' + opts(b.branches, u.branch || '', '-') + '</select></label>' +
+      '<label class="f"><span>' + (isNew ? 'รหัสผ่าน' : 'ตั้งรหัสผ่านใหม่ (เว้นว่างถ้าไม่เปลี่ยน)') + '</span><input class="i" id="uP" type="password" autocomplete="new-password"></label>' +
+      '<label class="f"><span>สถานะ</span><select class="i" id="uA"><option value="1"' + (u.active ? ' selected' : '') + '>ใช้งาน</option><option value="0"' + (u.active ? '' : ' selected') + '>ปิดการใช้งาน</option></select></label></div>' +
+      '<div class="row"><button class="btn pri" type="submit">บันทึก</button><button class="btn ghost" type="button" data-close>ยกเลิก</button></div></form>');
+    qs('#uf', m).onsubmit = function (ev) {
+      ev.preventDefault();
+      busy(ev.submitter || ev.target.querySelector("[type=submit]"), authed('saveUser', { username: qs('#uU', m).value, name: qs('#uN', m).value, role: qs('#uR', m).value, branch: qs('#uB', m).value, password: qs('#uP', m).value, active: qs('#uA', m).value === '1' }))
+        .then(function () { m.remove(); toast('บันทึกผู้ใช้แล้ว'); go('users'); });
+    };
+  }
+
+  // ---------- settings (admin) ----------
+  function viewSettings(el) {
+    authed('getSettings').then(function (c) { drawSettings(el, c); }).catch(function (e) { el.innerHTML = '<div class="panel err">' + esc(e.message) + '</div>'; });
+  }
+  function drawSettings(el, c) {
+    var b = state.boot, ev = String(c.lineEvents || '').split(',');
+    var groups = [['lineCentral', 'ส่วนกลาง', 'ส่วนกลาง']].concat(b.branches.map(function (x) { return ['lineBranch_' + x.code, x.name, x.code]; }));
+    function copyRow(cmd) { return '<div class="cmd"><code class="mono">' + esc(cmd) + '</code><button class="btn sm" type="button" data-copy="' + esc(cmd) + '">คัดลอก</button></div>'; }
+    el.innerHTML = '<div class="head"><div><h1>ตั้งค่า</h1><div class="muted small">ข้อมูลหน่วยงานและการแจ้งเตือนทางอีเมล / LINE</div></div></div>' +
+      '<div class="detail"><div class="stack">' +
+      '<section class="panel stack"><h2>ข้อมูลทั่วไป</h2><div class="grid2">' +
+      '<label class="f"><span>ชื่อหน่วยงาน (หัวใบแจ้งซ่อม)</span><input class="i" id="sOrg" value="' + esc(c.orgName) + '"></label>' +
+      '<label class="f"><span>อีเมลแจ้งเมื่อมีใบแจ้งซ่อมใหม่ (คั่นด้วย ,)</span><input class="i" id="sMail" value="' + esc(c.notifyEmail) + '" inputmode="email"></label>' +
+      '<label class="f span2"><span>ลิงก์แอปบนมือถือ (ปุ่มในข้อความ LINE จะเปิดลิงก์นี้ เว้นว่าง = เปิดเว็บแอป Apps Script)</span><input class="i" id="sApp" value="' + esc(c.appUrl || '') + '" placeholder="https://ชื่อบัญชี.github.io/repair/" inputmode="url"></label></div></section>' +
+      '<section class="panel stack"><div class="ptitle"><h2>LINE แจ้งเตือน</h2>' + (c.lineTokenSet ? '<span class="pill st-done">เชื่อมต่อแล้ว</span>' : '<span class="pill">ยังไม่ได้ตั้งค่า</span>') + '</div>' +
+      '<label class="f"><span>Channel access token (long-lived) จาก LINE Developers</span><input class="i mono" id="sTok" type="password" autocomplete="off" placeholder="' + (c.lineTokenSet ? 'ตั้งค่าแล้ว ' + esc(c.lineToken) + ' — กรอกใหม่เพื่อเปลี่ยน' : 'วาง token ที่นี่') + '"></label>' +
+      '<label class="f"><span>Webhook URL (นำไปใส่ใน LINE Developers > Messaging API)</span>' + (c.webhookUrl ? copyRow(c.webhookUrl) : '<div class="muted small">จะแสดงเมื่อเผยแพร่เป็นเว็บแอปแล้ว (URL เดียวกับหน้าเว็บนี้ ลงท้าย /exec)</div>') + '</label>' +
+      '<div class="f"><span>แจ้งเตือนเมื่อ</span><div class="radios">' + c.events.map(function (x) {
+        return '<label><input type="checkbox" name="sEv" value="' + x.code + '"' + (ev.indexOf(x.code) >= 0 ? ' checked' : '') + '><span>' + esc(x.name) + ' <span class="muted small">→ ' + esc(x.to) + '</span></span></label>';
+      }).join('') + '</div></div>' +
+      '<div class="muted small">LINE นับโควตาข้อความตามจำนวนสมาชิกในกลุ่ม (ส่ง 1 ครั้งเข้ากลุ่ม 6 คน = 6 ข้อความ) เลือกเฉพาะเหตุการณ์ที่จำเป็นถ้าใช้แพ็กเกจฟรี ส่วนการพิมพ์ถามในกลุ่ม ("งานค้าง", เลขที่ใบแจ้งซ่อม) ไม่นับโควตา</div>' +
+      '<div class="err" id="sErr"></div><div class="row"><button class="btn pri" type="button" id="sSave">บันทึกการตั้งค่า</button><button class="btn" type="button" id="sTest">ส่งข้อความทดสอบ</button></div><div id="sRes"></div></section>' +
+      '</div><div class="stack">' +
+      '<section class="panel stack"><h2>ลงทะเบียนกลุ่ม LINE</h2><div class="small">เพิ่มบัญชี LINE OA ของระบบเข้ากลุ่มส่วนกลางและกลุ่มของแต่ละสาขา แล้วพิมพ์คำสั่งในกลุ่มนั้น รหัสลงทะเบียน <b class="mono">' + esc(c.lineRegisterCode) + '</b></div>' +
+      '<div class="tscroll"><table class="t"><thead><tr><th>ห้อง</th><th>คำสั่งที่พิมพ์ในกลุ่ม</th><th class="num">กลุ่มที่ผูก</th><th></th></tr></thead><tbody>' +
+      groups.map(function (g) {
+        var n = c[g[0] + '_n'] || 0;
+        return '<tr><td style="white-space:nowrap">' + esc(g[1]) + '</td><td>' + copyRow('ลงทะเบียน ' + g[2] + ' ' + c.lineRegisterCode) + '</td><td class="num">' + (n ? '<span class="pill st-done">' + n + '</span>' : '<span class="muted">-</span>') + '</td><td>' + (n ? '<button class="btn sm dng" type="button" data-clear="' + g[0] + '">ล้าง</button>' : '') + '</td></tr>';
+      }).join('') + '</tbody></table></div>' +
+      '<div class="muted small">ในกลุ่มที่ลงทะเบียนแล้วพิมพ์ <b>งานค้าง</b> เพื่อดูสรุป หรือพิมพ์เลขที่ใบแจ้งซ่อมเพื่อดูสถานะ พิมพ์ <b>ยกเลิกลงทะเบียน</b> เพื่อหยุดแจ้งเตือน</div></section>' +
+      '</div></div>';
+    qsa('[data-copy]', el).forEach(function (bt) {
+      bt.onclick = function () {
+        var v = bt.dataset.copy;
+        Promise.resolve().then(function () { return navigator.clipboard.writeText(v); }).then(function () { toast('คัดลอกแล้ว'); }, function () {
+          var code = bt.previousElementSibling, r = document.createRange(); r.selectNodeContents(code); var sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); toast('เลือกข้อความแล้ว กด Ctrl+C เพื่อคัดลอก');
+        });
+      };
+    });
+    function collect() {
+      return { orgName: qs('#sOrg').value, notifyEmail: qs('#sMail').value, appUrl: qs('#sApp').value.trim(), lineToken: qs('#sTok').value.trim(),
+        lineEvents: qsa('[name=sEv]:checked', el).map(function (x) { return x.value; }).join(',') || 'none' };
+    }
+    qs('#sSave').onclick = function (e) {
+      busy(e.currentTarget, authed('saveSettings', collect())).then(function (c2) { state.boot.orgName = c2.orgName || state.boot.orgName; toast('บันทึกแล้ว'); drawSettings(el, c2); });
+    };
+    qs('#sTest').onclick = function (e) {
+      var btn = e.currentTarget;
+      busy(btn, authed('saveSettings', collect()).then(function () { return authed('testNotify'); })).then(function (r) {
+        var box = qs('#sRes');
+        if (!r || r.demo) { box.innerHTML = '<div class="demo-banner">โหมดตัวอย่างส่ง LINE จริงไม่ได้ ในระบบจริงข้อความทดสอบจะเข้าทุกกลุ่มที่ลงทะเบียน</div>'; return; }
+        box.innerHTML = '<div class="' + (r.failed || r.errors.length ? 'confirm' : 'picked') + '">ส่งสำเร็จ ' + r.sent + ' จาก ' + r.targets + ' ห้อง' +
+          (r.errors.length ? '<br>' + r.errors.map(esc).join('<br>') : '') + '</div>';
+      });
+    };
+    qsa('[data-clear]', el).forEach(function (bt) {
+      bt.onclick = function () {
+        var d = {}; d[bt.dataset.clear] = '';
+        busy(bt, authed('saveSettings', d)).then(function (c2) { toast('ล้างการผูกกลุ่มแล้ว'); drawSettings(el, c2); });
+      };
+    });
+  }
+
+  // ---------- อัปเดตอัตโนมัติ: กลับมาที่แท็บ / ทุก 60 วินาที (เห็นใบแจ้งซ่อมใหม่จากเครื่องอื่น) ----------
+  function autoRefresh() {
+    if (!state.token || !state.pane || state.pane.hidden || !KEEP[state.view] || !state.pane._refresh) return;
+    if (document.querySelector('.modal')) return;
+    var a = document.activeElement;
+    if (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && state.pane.contains(a)) return;
+    state.pane._refresh();
+  }
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') autoRefresh(); });
+  setInterval(function () { if (document.visibilityState === 'visible') autoRefresh(); }, 60000);
+
+  // ---------- boot ----------
+  window.addEventListener('unhandledrejection', function (e) { e.preventDefault(); });
+  function boot() {
+    var saved = store('mt_token');
+    if (saved && LIVE) { state.token = saved; start(); } else renderLogin();
+  }
+  // ลิงก์จาก LINE: ...exec?t=MA10268554 เปิดใบแจ้งซ่อมหลังเข้าสู่ระบบ
+  var booted = false;
+  function bootOnce() { if (!booted) { booted = true; boot(); } }
+  if (IS_GAS && google.script.url) {
+    try { google.script.url.getLocation(function (loc) { state.deep = (loc && loc.parameter && loc.parameter.t) || null; bootOnce(); }); } catch (e) { bootOnce(); }
+    setTimeout(bootOnce, 1500);
+  } else {
+    try { var mt = /[?&]t=([A-Za-z0-9]+)/.exec(location.search); if (mt) state.deep = mt[1]; } catch (e) { }
+    bootOnce();
+  }
+})();
+
+</script>
+<script>
+if ('serviceWorker' in navigator) window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+</script>
+</body>
+</html>
